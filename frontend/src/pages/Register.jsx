@@ -6,7 +6,7 @@ import { toUserMessage } from "../utils/errorMessage"
 
 const LogoMark = ({ className = "w-10 h-10" }) => (
   <img
-    src="/capsule-corp.svg"
+    src={`${import.meta.env.BASE_URL}capsule-corp.svg`}
     alt="Capsule"
     className={`${className} object-contain`}
     loading="eager"

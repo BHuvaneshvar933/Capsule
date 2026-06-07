@@ -15,6 +15,8 @@ import java.util.Base64;
 @RequiredArgsConstructor
 public class PushServiceImpl implements com.example.tracker1.service.PushService {
 
+    private final MetricsService metricsService;
+
     @Value("${app.push.public-key:}")
     private String publicKey;
 
@@ -36,6 +38,7 @@ public class PushServiceImpl implements com.example.tracker1.service.PushService
             throw new IllegalStateException("Push not configured");
         }
 
+        metricsService.recordPushAttempt();
         try {
             PushService pushService = new PushService();
             pushService.setSubject(subject);
@@ -56,7 +59,9 @@ public class PushServiceImpl implements com.example.tracker1.service.PushService
             );
 
             pushService.send(notification);
+            metricsService.recordPushSuccess();
         } catch (Exception e) {
+            metricsService.recordPushFailure();
             throw new RuntimeException("Failed to send push", e);
         }
     }

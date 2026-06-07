@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Capsule (New Tab)",
+  "version": "0.1.0",
+  "description": "Replaces the Chrome New Tab page with the Capsule dashboard.",
+  "host_permissions": [
+    "http://localhost:*/*",
+    "http://127.0.0.1:*/*",
+    "https://*/*"
+  ],
+  "chrome_url_overrides": {
+    "newtab": "dist/index.html"
+  }
+}

@@ -2,7 +2,7 @@ import { useMemo } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { ChevronLeft } from "lucide-react"
 
-const CAPSULE_CORP_LOGO_URL = "/capsule-corp.svg"
+const CAPSULE_CORP_LOGO_URL = `${import.meta.env.BASE_URL}capsule-corp.svg`
 
 function titleForPath(pathname) {
   if (pathname === "/" || pathname.startsWith("/register")) return "Welcome"

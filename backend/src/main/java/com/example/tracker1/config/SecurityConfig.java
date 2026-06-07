@@ -3,6 +3,7 @@ package com.example.tracker1.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,7 +28,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                .cors(cors -> {})
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
 
                 .sessionManagement(session ->
@@ -35,11 +36,15 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+                        // Allow CORS preflight everywhere.
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         // Public health/wake endpoint (used by the frontend to wake the backend)
                         .requestMatchers("/test").permitAll()
-                        .anyRequest().authenticated()
-                )
+                        // Public metrics endpoint (for demo/reporting)
+                        .requestMatchers("/api/metrics").permitAll()
+                         .anyRequest().authenticated()
+                 )
 
                 .addFilterBefore(
                         jwtAuthenticationFilter,
@@ -57,23 +62,35 @@ public class SecurityConfig {
         // For local dev; in prod set ALLOWED_ORIGINS (comma-separated)
         String raw = System.getenv("ALLOWED_ORIGINS");
         if (raw == null || raw.isBlank()) {
-            // Vite dev uses 5173, `vite preview` often uses 4173.
-            // Use patterns so any local port works for local testing.
-            configuration.setAllowedOriginPatterns(List.of(
-                    "http://localhost:*",
-                    "http://127.0.0.1:*"
-            ));
+             // Vite dev uses 5173, `vite preview` often uses 4173.
+             // Use patterns so any local port works for local testing.
+             configuration.setAllowedOriginPatterns(List.of(
+                     "http://localhost:*",
+                    "http://127.0.0.1:*",
+                    // Allow local Chrome extension builds to call the API.
+                    "chrome-extension://*"
+             ));
         } else {
-            configuration.setAllowedOrigins(
-                    java.util.Arrays.stream(raw.split(","))
-                            .map(String::trim)
-                            .filter(s -> !s.isBlank())
-                            .toList()
-            );
+            List<String> origins = java.util.Arrays.stream(raw.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isBlank())
+                    .toList();
+
+            // Spring treats "allowedOrigins" as exact matches only.
+            // Chrome extensions have origins like "chrome-extension://<extension-id>".
+            // If you want to allow patterns (e.g. "chrome-extension://*" or "http://localhost:*")
+            // use allowedOriginPatterns.
+            boolean hasPattern = origins.stream().anyMatch(o -> o.contains("*") || o.startsWith("chrome-extension://"));
+            if (hasPattern) configuration.setAllowedOriginPatterns(origins);
+            else configuration.setAllowedOrigins(origins);
         }
+
+        // Chrome extension XHR/fetch can include this header.
+        configuration.addExposedHeader("Authorization");
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();

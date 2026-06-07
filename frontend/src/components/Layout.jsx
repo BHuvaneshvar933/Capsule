@@ -81,7 +81,7 @@ const BriefcaseIcon = () => (
 
 const LogoMark = ({ className = "w-8 h-8" }) => (
   <img
-    src="/capsule-corp.svg"
+    src={`${import.meta.env.BASE_URL}capsule-corp.svg`}
     alt="Capsule"
     className={`${className} object-contain`}
     loading="eager"

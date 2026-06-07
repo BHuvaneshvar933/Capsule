@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom"
+import { BrowserRouter, HashRouter, Routes, Route, Navigate, Outlet } from "react-router-dom"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Dashboard from "./pages/Dashboard"
@@ -32,8 +32,12 @@ function App() {
 
   const Shell = isMobile ? AppLayout : Layout
 
+  // In a Chrome extension (new tab override), we don't have server-side route
+  // handling, so use hash-based routing to keep refreshes working.
+  const Router = typeof window !== "undefined" && window.location.protocol === "chrome-extension:" ? HashRouter : BrowserRouter
+
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
         {/* Public routes */}
         <Route path="/" element={isMobile ? <AuthLayout><Login /></AuthLayout> : <Login />} />
@@ -64,7 +68,7 @@ function App() {
         {/* Catch all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   )
 }
 

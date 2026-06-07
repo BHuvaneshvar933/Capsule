@@ -25,7 +25,7 @@ WORKDIR /app
 
 COPY --from=build /app/backend/target/*.jar /app/app.jar
 
-# Render sets PORT; app uses server.port=${PORT:5001}
-EXPOSE 5001
+# Render sets PORT; app uses server.port=${PORT:5000}
+EXPOSE 5000
 
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

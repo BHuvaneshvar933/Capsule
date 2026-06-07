@@ -9,4 +9,7 @@ import lombok.*;
 public class AnalyzeResumeResponse {
     private String resumeId;
     private ResumeJobMatchResponse analysis;
+
+    // Backend-measured time for the AI call + parsing.
+    private Long aiDurationMs;
 }

@@ -8,12 +8,15 @@ function resolveApiBaseUrl() {
   // whatever host served it (works for reverse-proxy / single-domain deploys).
   // For local dev/preview on your machine, fall back to the backend dev port.
   if (typeof window !== "undefined") {
+    // Chrome extension pages are `chrome-extension://...` origins; they can't
+    // host the API, so default to local backend unless explicitly configured.
+    if (window.location.protocol === "chrome-extension:") return "http://localhost:5000"
     const host = window.location.hostname
-    if (host === "localhost" || host === "127.0.0.1") return "http://localhost:5001"
+    if (host === "localhost" || host === "127.0.0.1") return "http://localhost:5000"
     return window.location.origin
   }
 
-  return "http://localhost:5001"
+  return "http://localhost:5000"
 }
 
 const baseURL = resolveApiBaseUrl()

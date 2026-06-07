@@ -2,7 +2,17 @@ import { useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import { getMe } from "../api/account"
 import { useOnlineStatus } from "../hooks/useOnlineStatus"
-import { getSetting, removeSetting, setSetting } from "../db"
+import {
+  addPomodoro,
+  ensureDefaultHabits,
+  getHabitDayLog,
+  getSetting,
+  listHabits,
+  removeSetting,
+  setHabitDoneForDay,
+  setSetting,
+} from "../db"
+import { summarizeAiMetrics } from "../perf/metrics"
 import {
   fetchGitHubContributions90d,
   fetchGitHubProfile,
@@ -77,6 +87,9 @@ export default function Settings() {
 
   const [confirmClearIntegrations, setConfirmClearIntegrations] = useState(false)
 
+  const [demoBusy, setDemoBusy] = useState(false)
+  const [aiPerf, setAiPerf] = useState({ analyze: null, questions: null })
+
   const refreshMe = async () => {
     if (!online) return
     try {
@@ -89,6 +102,60 @@ export default function Settings() {
       setMeError(toUserMessage(e, "Couldn't load your account details. Please try again."))
     } finally {
       setMeLoading(false)
+    }
+  }
+
+  const refreshAiPerf = async () => {
+    const analyze = await summarizeAiMetrics({ kind: "analyzeResume" })
+    const questions = await summarizeAiMetrics({ kind: "generateQuestions" })
+    setAiPerf({ analyze, questions })
+  }
+
+  const seedLocalDemo = async () => {
+    try {
+      setDemoBusy(true)
+      await ensureDefaultHabits()
+      const habits = await listHabits()
+
+      const yyyyMmDdLocal = (d) => {
+        const pad = (n) => String(n).padStart(2, "0")
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+      }
+
+      // Seed habit completion for the last 7 days.
+      for (let i = 0; i < 7; i += 1) {
+        const d = new Date()
+        d.setDate(d.getDate() - i)
+        const dayKey = yyyyMmDdLocal(d)
+        // eslint-disable-next-line no-await-in-loop
+        const existing = await getHabitDayLog(dayKey)
+        const alreadyAny = existing && Object.keys(existing).length > 0
+        if (!alreadyAny) {
+          const toMark = habits.slice(0, Math.min(3, habits.length))
+          for (const h of toMark) {
+            // eslint-disable-next-line no-await-in-loop
+            await setHabitDoneForDay(dayKey, h.id, true)
+          }
+        }
+      }
+
+      // Seed pomodoros (work sessions) for the last 7 days.
+      for (let i = 0; i < 7; i += 1) {
+        const d = new Date()
+        d.setDate(d.getDate() - i)
+        const iso = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 19, 0, 0).toISOString()
+        // eslint-disable-next-line no-await-in-loop
+        await addPomodoro({ duration: 25, type: "work", taskTitle: "Interview Prep", tags: ["demo"], completedAt: iso })
+        // eslint-disable-next-line no-await-in-loop
+        await addPomodoro({ duration: 50, type: "work", taskTitle: "Job Applications", tags: ["demo"], completedAt: iso })
+      }
+
+      await refreshAiPerf()
+      setToast({ open: true, message: "Seeded local demo data (pomodoros + habit logs).", tone: "success" })
+    } catch (e) {
+      setToast({ open: true, message: toUserMessage(e, "Failed to seed local demo data"), tone: "error" })
+    } finally {
+      setDemoBusy(false)
     }
   }
 
@@ -111,6 +178,10 @@ export default function Settings() {
   useEffect(() => {
     refreshMe()
   }, [online])
+
+  useEffect(() => {
+    refreshAiPerf()
+  }, [])
 
   useEffect(() => {
     if (!normalizedTabFromUrl) return
@@ -346,6 +417,42 @@ export default function Settings() {
               </div>
             )}
           </div>
+
+          <div className="card">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-semibold text-white">Demo & Metrics</h2>
+                <p className="text-dark-400 text-sm mt-1">Week 1 demo data and performance reporting helpers.</p>
+              </div>
+              <button
+                type="button"
+                onClick={seedLocalDemo}
+                disabled={demoBusy}
+                className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {demoBusy ? "Seeding…" : "Seed local demo"}
+              </button>
+            </div>
+
+            <div className="mt-5 grid sm:grid-cols-2 gap-4">
+              <div className="rounded-2xl border border-dark-700 bg-dark-800/40 px-4 py-3">
+                <div className="text-dark-400 text-xs">AI: analyzeResume (browser)</div>
+                <div className="mt-1 text-white font-semibold">
+                  {aiPerf.analyze ? `${aiPerf.analyze.avgMs}ms avg (max ${aiPerf.analyze.maxMs}ms, n=${aiPerf.analyze.count})` : "—"}
+                </div>
+              </div>
+              <div className="rounded-2xl border border-dark-700 bg-dark-800/40 px-4 py-3">
+                <div className="text-dark-400 text-xs">AI: generateQuestions (browser)</div>
+                <div className="mt-1 text-white font-semibold">
+                  {aiPerf.questions ? `${aiPerf.questions.avgMs}ms avg (max ${aiPerf.questions.maxMs}ms, n=${aiPerf.questions.count})` : "—"}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-3 text-xs text-dark-500">
+              Backend exposes server-side stats at <span className="font-mono">/api/metrics</span>.
+            </div>
+          </div>
         </div>
       )}
 
@@ -490,6 +597,7 @@ export default function Settings() {
                   </div>
                 )}
               </div>
+
             </div>
           </div>
         </div>

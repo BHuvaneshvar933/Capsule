@@ -23,6 +23,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;  // 🔥 Missing dependency
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        if (path == null) return false;
+        // Public endpoints should not be affected by JWT parsing.
+        if (path.startsWith("/api/auth/")) return true;
+        if (path.equals("/test")) return true;
+        if (path.equals("/api/metrics")) return true;
+        return false;
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)

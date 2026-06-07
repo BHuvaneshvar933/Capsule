@@ -15,4 +15,7 @@ public class GenerateQuestionsApiResponse {
     private String role;
     private Instant createdAt;
     private GenerateQuestionsResponse payload;
+
+    // Backend-measured time for the AI call + parsing.
+    private Long aiDurationMs;
 }

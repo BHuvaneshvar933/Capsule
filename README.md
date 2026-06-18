@@ -1,117 +1,144 @@
-# Tracker1 (Interview Tracker)
+# 🚀 Tracker1: Full-Stack Job Application Tracker
 
-Full-stack job application tracker.
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-F2F4F9?style=for-the-badge&logo=spring-boot)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)
 
-## Tech
+Tracker1 is a comprehensive, full-stack application designed to help job seekers seamlessly track their job applications, prepare for interviews, and manage their productivity. 
 
-- Backend: Spring Boot + MongoDB + JWT (`backend/`)
-- Frontend: React + Vite + Tailwind (`frontend/`)
+Built with a robust Spring Boot backend and a modern React frontend, it features progressive web app (PWA) capabilities, local-first storage, and a Chrome extension variant to maintain focus.
 
-## Local Setup
+## ✨ Key Features
+
+- **Job Application Tracking**: Keep track of applications, interview stages, and outcomes.
+- **Productivity Tools**: Integrated Pomodoro timer and Habit tracker (local-first via IndexedDB).
+- **Task Management**: Online-synchronized Todo lists.
+- **Advanced Analytics**: Detailed insights into application success rates, monthly metrics, and dynamic reporting.
+- **PWA & Offline Support**: Access cached job applications even when offline.
+- **Chrome New Tab Extension**: Replace your new tab page with your job tracker dashboard.
+- **AI Integration & Metrics**: Tracks server-side AI response times and push notification delivery rates.
+
+## 🛠️ Tech Stack
 
 ### Backend
+- **Framework**: Spring Boot (Java)
+- **Database**: MongoDB
+- **Security**: JWT Authentication
+- **Build Tool**: Maven
 
-Environment variables:
+### Frontend
+- **Framework**: React.js with Vite
+- **Styling**: Tailwind CSS
+- **Storage**: localforage (IndexedDB) for local-first features
 
-- `MONGODB_URI` (default: `mongodb://localhost:27017/jobtracker`)
-- `JWT_SECRET` (required; must be >= 32 chars)
-- `PORT` (default: `5000`)
+---
 
-Demo seed (optional):
+## 🚀 Getting Started
 
-- `DEMO_SEED_ENABLED` (`true`/`false`)
-- `DEMO_SEED_EMAIL` (required if seeding)
-- `DEMO_SEED_PASSWORD` (required if seeding)
+Follow these steps to set up the project locally.
 
-Run:
+### Prerequisites
+- Node.js (v18+)
+- Java (JDK 17+)
+- Maven
+- MongoDB (running locally or a MongoDB URI)
 
+### 1. Backend Setup
+
+Navigate to the `backend` directory:
 ```bash
 cd backend
+```
+
+Set the required environment variables (e.g., in your terminal or IDE):
+```env
+MONGODB_URI=mongodb://localhost:27017/jobtracker
+JWT_SECRET=your_super_secret_jwt_key_must_be_32_chars
+PORT=5000
+
+# Optional: Demo Data Seeding
+DEMO_SEED_ENABLED=true
+DEMO_SEED_EMAIL=test@example.com
+DEMO_SEED_PASSWORD=securepassword
+```
+
+Run the backend server:
+```bash
 mvn spring-boot:run
 ```
 
-### Frontend
+### 2. Frontend Setup
 
-Optional environment variables:
-
-- `VITE_API_BASE_URL` (default: `http://localhost:5000`)
-
-Run:
-
+Navigate to the `frontend` directory:
 ```bash
 cd frontend
+```
+
+Set the optional environment variable (defaults to localhost:5000):
+```env
+VITE_API_BASE_URL=http://localhost:5000
+```
+
+Install dependencies and start the dev server:
+```bash
 npm install
 npm run dev
 ```
 
-## Analytics
+---
 
-- Basic: `GET /api/applications/analytics`
-- Monthly: `GET /api/applications/analytics/monthly`
-- Professional: `GET /api/applications/analytics/pro?from=YYYY-MM-DD&to=YYYY-MM-DD&groupBy=month|day&topN=10`
+## 🌐 PWA & Offline Functionality
 
-## Week 1 Metrics
-
-Backend exposes a simple metrics endpoint:
-
-- `GET /api/metrics`
-
-Includes:
-
-- AI response time stats (server-side): avg/max per endpoint
-- Push delivery rate: success/attempts (counts are from backend send attempts)
-
-Frontend also records AI call timing locally (per browser). You can see a summary in `Settings -> Demo & Metrics`.
-
-## Offline / PWA Verification
-
+Tracker1 is designed to be resilient. To verify offline functionality:
 1. Build and preview the frontend: `cd frontend && npm run build && npm run preview`
-2. Open the app once while online and visit Job Tracker to cache some pages/data.
-3. Toggle your network offline (Chrome DevTools or OS).
-4. Confirm: App shell still loads.
-5. Confirm: Job Tracker lists previously visited applications from cache.
+2. Open the app while online and visit the Job Tracker to cache the data.
+3. Toggle your network offline (via OS or Chrome DevTools).
+4. Verify the App Shell loads and the Job Tracker displays previously visited applications from the cache.
 
-Notes:
+*Note: Todos are online-only, while the Pomodoro and Habit trackers are local-first.*
 
-- Todos are currently online-only.
-- Pomodoro + Habits are local-first (IndexedDB via localforage).
+---
 
-## Deployment (Render backend + Vercel frontend)
+## 🧩 Chrome Extension
 
-Backend (Render):
+You can build Tracker1 as a Chrome extension that replaces your New Tab page!
 
-- Use the root `Dockerfile` or `backend/Dockerfile`
-- `MONGODB_URI`, `MONGODB_DATABASE` (optional), `JWT_SECRET`, `PORT`
-- `ALLOWED_ORIGINS` (comma-separated, e.g. `https://<your-vercel-domain>`)
-- Push (optional): `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`
-- AI (optional): `GEMINI_API_KEY`
-- Demo seed (optional): `DEMO_SEED_ENABLED=true`, `DEMO_SEED_EMAIL`, `DEMO_SEED_PASSWORD`
+1. Build the extension bundle:
+   ```bash
+   cd frontend
+   npm run build:extension
+   ```
+2. Open Chrome and navigate to `chrome://extensions`
+3. Enable **Developer mode** in the top right.
+4. Click **Load unpacked** and select the `chrome-extension/` folder from this repository.
 
-Frontend (Vercel):
+*Note: The backend API defaults to `http://localhost:5000`. Set `VITE_API_BASE_URL` during the build if using a hosted backend.*
 
-- Deploy `frontend/`
-- Set `VITE_API_BASE_URL` to your Render backend URL if you are not serving API on the same domain.
+---
 
-## Chrome New Tab Extension
+## ☁️ Deployment
 
-This repo can be built as a Chrome extension that replaces the New Tab page with the same React app.
+### Backend (Render / Docker)
+- Deploy using the root `Dockerfile` or `backend/Dockerfile`.
+- Required Environment Variables: `MONGODB_URI`, `JWT_SECRET`, `PORT`, `ALLOWED_ORIGINS` (comma-separated, e.g., `https://your-vercel-domain.com`).
+- Optional Variables: `VAPID_*` keys for Push Notifications, `GEMINI_API_KEY` for AI features.
 
-Build the extension bundle:
+### Frontend (Vercel)
+- Connect your repository to Vercel and deploy the `frontend/` directory.
+- Ensure you set the `VITE_API_BASE_URL` environment variable to your deployed backend URL.
 
-```bash
-cd frontend
-npm run build:extension
-```
+---
 
-Load in Chrome:
+## 📊 API & System Metrics
 
-1. Open `chrome://extensions`
-2. Enable "Developer mode"
-3. Click "Load unpacked"
-4. Select the `chrome-extension/` folder
+The backend exposes endpoints for analytics and monitoring:
 
-Notes:
-
-- The extension points Chrome New Tab to `chrome-extension/dist/index.html` (the Vite build output).
-- Routing uses hash URLs inside the extension so refresh/navigation works.
-- The backend API is still `http://localhost:5000` by default. If you want the extension to talk to a hosted backend, set `VITE_API_BASE_URL` when building.
+- **Analytics**: 
+  - `GET /api/applications/analytics` (Basic)
+  - `GET /api/applications/analytics/monthly` (Monthly)
+  - `GET /api/applications/analytics/pro` (Professional: supports date ranges, grouping, and top N)
+- **Metrics**:
+  - `GET /api/metrics` (Tracks server-side AI response times, push delivery success rates)
+  - *Frontend locally records AI call timing, visible in `Settings -> Demo & Metrics`.*

@@ -1,29 +1,56 @@
-# Tracker1 (Interview Tracker)
+# 🚀 Capsule: The Ultimate Developer Productivity & Career Suite
 
-Full-stack job application tracker.
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-F2F4F9?style=for-the-badge&logo=spring-boot)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)
+
+**Capsule** is a comprehensive, local-first developer productivity and career management suite. Designed to be your daily driver, it operates as a full-fledged Progressive Web App (PWA) and can even replace your Chrome New Tab page. 
+
+Whether you're tracking job applications, prepping for interviews with AI, curating learning resources, or just trying to stay focused using the Pomodoro technique, Capsule keeps everything in one unified dashboard.
+
+---
 
 ## ✨ Key Features
 
-- **Job Application Tracking**: Keep track of applications, interview stages, and outcomes.
-- **Productivity Tools**: Integrated Pomodoro timer and Habit tracker (local-first via IndexedDB).
-- **Task Management**: Online-synchronized Todo lists.
-- **Advanced Analytics**: Detailed insights into application success rates, monthly metrics, and dynamic reporting.
-- **PWA & Offline Support**: Access cached job applications even when offline.
-- **Chrome New Tab Extension**: Replace your new tab page with your job tracker dashboard.
-- **AI Integration & Metrics**: Tracks server-side AI response times and push notification delivery rates.
+### 🧠 AI Career Assistant
+- **Resume-Job Matcher**: Upload your PDF resume and paste a job description. The AI calculates a match score, highlights missing skills, provides a gap analysis, and suggests resume keywords.
+- **Interview Question Generator**: Generate role-specific behavioral, technical, and company-focused interview questions based entirely on your resume's context.
+- **Resume Library**: Securely store and manage multiple resume versions.
+
+### 📌 Content Curator
+- **Personal "Save-Anything" Board**: Save GitHub repos, tweets, articles, images, and quick notes. 
+- **Auto-categorization**: Automatically detects the type of content based on the URL (e.g., GitHub Repo, Tweet, Video).
+- **Tagging & Favorites**: Organize your saved resources easily.
+
+### 📊 Advanced Job Tracking & Analytics
+- **Pipeline Management**: Track applications across stages (Applied, OA, Interview, Offer, Rejected).
+- **Deep Analytics**: View detailed insights like your response rate, weekly application velocity, most active days, and AI-driven suggestions (e.g., "Weekday applications perform better").
+
+### ⏱️ Productivity Suite
+- **Pomodoro Timer & Habit Tracker**: Local-first tools powered by IndexedDB (`localforage`) ensuring speed and privacy.
+- **Task Management**: Online-synchronized Todo lists to keep your daily tasks aligned with your broader goals.
+
+### 🌐 Seamless Access (PWA & Chrome Extension)
+- **Progressive Web App**: Installable on desktop and mobile with offline caching support.
+- **Chrome New Tab Extension**: Replace your default new tab page with the Capsule dashboard to stay focused on your goals every time you open a new tab.
+
+---
 
 ## 🛠️ Tech Stack
 
 ### Backend
-- **Framework**: Spring Boot (Java)
+- **Framework**: Spring Boot 3 (Java 17)
 - **Database**: MongoDB
-- **Security**: JWT Authentication
-- **Build Tool**: Maven
+- **Security**: Spring Security & JWT Authentication
+- **Integrations**: WebFlux for OpenAI REST API calls, Apache PDFBox for Resume parsing, Web Push (VAPID) for PWA notifications.
 
 ### Frontend
-- **Framework**: React.js with Vite
-- **Styling**: Tailwind CSS
+- **Framework**: React.js 19 with Vite
+- **Styling**: Tailwind CSS & clsx
 - **Storage**: localforage (IndexedDB) for local-first features
+- **Icons & Charts**: Lucide React, Recharts
 
 ---
 
@@ -44,7 +71,7 @@ Navigate to the `backend` directory:
 cd backend
 ```
 
-Set the required environment variables (e.g., in your terminal or IDE):
+Set the required environment variables:
 ```env
 MONGODB_URI=mongodb://localhost:27017/jobtracker
 JWT_SECRET=your_super_secret_jwt_key_must_be_32_chars
@@ -81,32 +108,19 @@ npm run dev
 
 ---
 
-## 🌐 PWA & Offline Functionality
+## 🧩 Chrome Extension Setup
 
-Tracker1 is designed to be resilient. To verify offline functionality:
-1. Build and preview the frontend: `cd frontend && npm run build && npm run preview`
-2. Open the app while online and visit the Job Tracker to cache the data.
-3. Toggle your network offline (via OS or Chrome DevTools).
-4. Verify the App Shell loads and the Job Tracker displays previously visited applications from the cache.
+Keep Capsule front-and-center by making it your Chrome New Tab page!
 
-*Note: Todos are online-only, while the Pomodoro and Habit trackers are local-first.*
-
----
-
-## 🧩 Chrome Extension
-
-You can build Tracker1 as a Chrome extension that replaces your New Tab page!
-
-1. Build the extension bundle:
+1. Build the extension bundle from the `frontend` directory:
    ```bash
-   cd frontend
    npm run build:extension
    ```
 2. Open Chrome and navigate to `chrome://extensions`
 3. Enable **Developer mode** in the top right.
 4. Click **Load unpacked** and select the `chrome-extension/` folder from this repository.
 
-*Note: The backend API defaults to `http://localhost:5000`. Set `VITE_API_BASE_URL` during the build if using a hosted backend.*
+*Note: The extension points Chrome to the Vite build output and defaults to `http://localhost:5000` for API calls.*
 
 ---
 
@@ -114,23 +128,9 @@ You can build Tracker1 as a Chrome extension that replaces your New Tab page!
 
 ### Backend (Render / Docker)
 - Deploy using the root `Dockerfile` or `backend/Dockerfile`.
-- Required Environment Variables: `MONGODB_URI`, `JWT_SECRET`, `PORT`, `ALLOWED_ORIGINS` (comma-separated, e.g., `https://your-vercel-domain.com`).
-- Optional Variables: `VAPID_*` keys for Push Notifications, `GEMINI_API_KEY` for AI features.
+- Required Variables: `MONGODB_URI`, `JWT_SECRET`, `PORT`, `ALLOWED_ORIGINS` (comma-separated).
+- Optional Variables: `VAPID_*` keys for Push Notifications.
 
 ### Frontend (Vercel)
 - Connect your repository to Vercel and deploy the `frontend/` directory.
-- Ensure you set the `VITE_API_BASE_URL` environment variable to your deployed backend URL.
-
----
-
-## 📊 API & System Metrics
-
-The backend exposes endpoints for analytics and monitoring:
-
-- **Analytics**: 
-  - `GET /api/applications/analytics` (Basic)
-  - `GET /api/applications/analytics/monthly` (Monthly)
-  - `GET /api/applications/analytics/pro` (Professional: supports date ranges, grouping, and top N)
-- **Metrics**:
-  - `GET /api/metrics` (Tracks server-side AI response times, push delivery success rates)
-  - *Frontend locally records AI call timing, visible in `Settings -> Demo & Metrics`.*
+- Ensure you set `VITE_API_BASE_URL` to your deployed backend URL.

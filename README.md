@@ -1,4 +1,4 @@
-# 🚀 Capsule: The Ultimate Developer Productivity & Career Suite
+# Capsule: The Ultimate Developer Productivity & Career Suite
 
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-F2F4F9?style=for-the-badge&logo=spring-boot)
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
@@ -12,33 +12,33 @@ Whether you're tracking job applications, prepping for interviews with AI, curat
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### 🧠 AI Career Assistant
+### AI Career Assistant
 - **Resume-Job Matcher**: Upload your PDF resume and paste a job description. The AI calculates a match score, highlights missing skills, provides a gap analysis, and suggests resume keywords.
 - **Interview Question Generator**: Generate role-specific behavioral, technical, and company-focused interview questions based entirely on your resume's context.
 - **Resume Library**: Securely store and manage multiple resume versions.
 
-### 📌 Content Curator
+### Content Curator
 - **Personal "Save-Anything" Board**: Save GitHub repos, tweets, articles, images, and quick notes. 
 - **Auto-categorization**: Automatically detects the type of content based on the URL (e.g., GitHub Repo, Tweet, Video).
 - **Tagging & Favorites**: Organize your saved resources easily.
 
-### 📊 Advanced Job Tracking & Analytics
+### Advanced Job Tracking & Analytics
 - **Pipeline Management**: Track applications across stages (Applied, OA, Interview, Offer, Rejected).
 - **Deep Analytics**: View detailed insights like your response rate, weekly application velocity, most active days, and AI-driven suggestions (e.g., "Weekday applications perform better").
 
-### ⏱️ Productivity Suite
+### Productivity Suite
 - **Pomodoro Timer & Habit Tracker**: Local-first tools powered by IndexedDB (`localforage`) ensuring speed and privacy.
 - **Task Management**: Online-synchronized Todo lists to keep your daily tasks aligned with your broader goals.
 
-### 🌐 Seamless Access (PWA & Chrome Extension)
+### Seamless Access (PWA & Chrome Extension)
 - **Progressive Web App**: Installable on desktop and mobile with offline caching support.
 - **Chrome New Tab Extension**: Replace your default new tab page with the Capsule dashboard to stay focused on your goals every time you open a new tab.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Backend
 - **Framework**: Spring Boot 3 (Java 17)
@@ -54,7 +54,7 @@ Whether you're tracking job applications, prepping for interviews with AI, curat
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 Follow these steps to set up the project locally.
 
@@ -108,7 +108,7 @@ npm run dev
 
 ---
 
-## 🧩 Chrome Extension Setup
+## Chrome Extension Setup
 
 Keep Capsule front-and-center by making it your Chrome New Tab page!
 
@@ -124,7 +124,7 @@ Keep Capsule front-and-center by making it your Chrome New Tab page!
 
 ---
 
-## ☁️ Deployment
+## Deployment
 
 ### Backend (Render / Docker)
 - Deploy using the root `Dockerfile` or `backend/Dockerfile`.

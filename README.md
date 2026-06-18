@@ -1,14 +1,6 @@
-# 🚀 Tracker1: Full-Stack Job Application Tracker
+# Tracker1 (Interview Tracker)
 
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-F2F4F9?style=for-the-badge&logo=spring-boot)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)
-
-Tracker1 is a comprehensive, full-stack application designed to help job seekers seamlessly track their job applications, prepare for interviews, and manage their productivity. 
-
-Built with a robust Spring Boot backend and a modern React frontend, it features progressive web app (PWA) capabilities, local-first storage, and a Chrome extension variant to maintain focus.
+Full-stack job application tracker.
 
 ## ✨ Key Features
 

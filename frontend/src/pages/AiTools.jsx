@@ -732,7 +732,6 @@ function ResumeLibrary({ online, resumesLoading, resumesError, resumes, onRefres
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <div className="text-white font-medium break-all">{r.fileName || "(unnamed)"}</div>
-                    <div className="text-xs text-dark-500 font-mono mt-1">{r.resumeId}</div>
                   </div>
                   <div className="text-right text-xs text-dark-500">
                     <div>{formatBytes(r.fileSize)}</div>

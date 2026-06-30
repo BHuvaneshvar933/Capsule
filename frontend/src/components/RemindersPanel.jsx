@@ -207,7 +207,6 @@ export default function RemindersPanel({ applicationId, todoId }) {
                     <div className="text-white font-semibold break-words">{r.title}</div>
                     <div className="text-dark-400 text-sm mt-1">{formatLocalDateTime(r.remindAt)}</div>
                     {r.message ? <div className="text-dark-300 text-sm mt-2 break-words">{r.message}</div> : null}
-                    {r.status ? <div className="text-dark-500 text-xs mt-2">Status: {r.status}</div> : null}
                   </div>
                   <button type="button" onClick={() => askDelete(r.id)} className="btn-ghost text-danger-300 flex items-center justify-center">
                     <TrashIcon />

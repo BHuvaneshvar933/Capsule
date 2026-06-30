@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 
 @RestController
-@RequestMapping("/api/push")
+@RequestMapping("/api/notifications")
 @RequiredArgsConstructor
 public class PushController {
 
@@ -38,12 +38,12 @@ public class PushController {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
-    @GetMapping("/public-key")
+    @GetMapping("/vapid-key")
     public ResponseEntity<String> getPublicKey() {
         return ResponseEntity.ok(publicKey == null ? "" : publicKey);
     }
 
-    @PostMapping("/subscribe")
+    @PostMapping("/register-device")
     public ResponseEntity<Void> subscribe(@RequestBody PushSubscriptionRequest request) {
         User user = getCurrentUser();
         if (request.getEndpoint() == null || request.getEndpoint().isBlank()) {
@@ -76,7 +76,7 @@ public class PushController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/unsubscribe")
+    @PostMapping("/unregister-device")
     public ResponseEntity<Void> unsubscribe(@RequestBody PushSubscriptionRequest request) {
         User user = getCurrentUser();
         if (request.getEndpoint() == null || request.getEndpoint().isBlank()) {

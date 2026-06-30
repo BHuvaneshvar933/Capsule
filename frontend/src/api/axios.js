@@ -208,8 +208,17 @@ api.interceptors.response.use(
     // Avoid infinite loops.
     if (cfg.__capsuleWakeRetried) return Promise.reject(error)
 
-    // Don't wake/retry on auth/client errors.
+    // Handle auth errors by automatically logging out
     const status = error?.response?.status
+    if (status === 401 || status === 403) {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("token")
+        window.location.href = "/"
+      }
+      return Promise.reject(error)
+    }
+
+    // Don't wake/retry on other client errors.
     if (status && status < 500 && status !== 408) return Promise.reject(error)
 
     if (!shouldAttemptWake(error)) return Promise.reject(error)

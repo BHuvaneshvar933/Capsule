@@ -52,8 +52,8 @@ function intensityTone(pct) {
 function intensityClass(pct) {
   const tone = intensityTone(pct)
   if (tone === "success") return "bg-success-500/20 border-success-500/30"
-  if (tone === "strong") return "bg-emerald-500/20 border-emerald-500/30"
-  if (tone === "light") return "bg-teal-500/12 border-teal-500/25"
+  if (tone === "strong") return "bg-primary-500/20 border-primary-500/30"
+  if (tone === "light") return "bg-accent-500/12 border-accent-500/25"
   return "bg-dark-800/30 border-dark-700"
 }
 
@@ -141,8 +141,8 @@ export default function Habits() {
   const totalCount = habits.length
   const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0
 
-  const meterBarClass = pct >= 100 ? "bg-emerald-500" : "bg-teal-500"
-  const meterTextClass = pct >= 100 ? "text-emerald-200" : "text-textPrimary"
+  const meterBarClass = pct >= 100 ? "bg-primary-500" : "bg-accent-500"
+  const meterTextClass = pct >= 100 ? "text-primary-200" : "text-textPrimary"
 
   const daySummaries = useMemo(() => {
     const total = totalCount
@@ -392,7 +392,7 @@ export default function Habits() {
                     className={[
                       "w-10 h-10 rounded-full border flex items-center justify-center text-sm font-semibold",
                       intensityClass(d.pct),
-                      selected ? "ring-2 ring-emerald-500/55" : "",
+                      selected ? "ring-2 ring-primary-500/55" : "",
                       isToday ? "shadow-inner-light" : "",
                     ].join(" ")}
                     title={`${d.dayKey}: ${d.done}/${d.total} (${d.pct}%)`}
@@ -400,7 +400,7 @@ export default function Habits() {
                     {String(d.dayKey).slice(-2)}
                   </div>
                   <div className={"text-[11px] " + (selected ? "text-white" : "text-dark-500")}>{formatDayLabel(d.dayKey)}</div>
-                  {isToday ? <div className="w-1 h-1 rounded-full bg-emerald-400" /> : <div className="w-1 h-1" />}
+                  {isToday ? <div className="w-1 h-1 rounded-full bg-primary-400" /> : <div className="w-1 h-1" />}
                 </button>
               )
             })}
@@ -548,7 +548,7 @@ export default function Habits() {
                               </div>
                               {streak > 0 ? (
                                 <div className="mt-1 inline-flex items-center gap-2">
-                                    <span className="text-[11px] px-2 py-0.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 text-emerald-200">
+                                    <span className="text-[11px] px-2 py-0.5 rounded-full border border-primary-500/25 bg-primary-500/10 text-primary-200">
                                       {streak} {plural(streak, "day", "days")} streak
                                     </span>
                                 </div>
@@ -604,8 +604,8 @@ export default function Habits() {
                 className={[
                   "h-9 rounded-xl border flex items-center justify-center text-xs tabular-nums",
                   intensityClass(d.pct),
-                  selected ? "ring-2 ring-emerald-500/55" : "",
-                  isToday ? "outline outline-1 outline-emerald-500/30" : "",
+                  selected ? "ring-2 ring-primary-500/55" : "",
+                  isToday ? "outline outline-1 outline-primary-500/30" : "",
                 ].join(" ")}
                 title={`${d.dayKey}: ${d.done}/${d.total} (${d.pct}%)`}
                 aria-label={`${d.dayKey}: ${d.done}/${d.total} (${d.pct}%)`}

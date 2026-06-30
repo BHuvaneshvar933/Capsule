@@ -12,9 +12,8 @@ function isExtensionNewTab() {
   return window.location.protocol === 'chrome-extension:'
 }
 
-// Register service worker only in production builds.
-// In `vite dev`, a SW can easily break refresh/navigation.
-if (import.meta.env.PROD && !isExtensionNewTab()) {
+// Register service worker. We now enable it in dev as well to test push notifications.
+if (!isExtensionNewTab()) {
   const updateSW = registerSW({
     immediate: true,
     onNeedRefresh() {

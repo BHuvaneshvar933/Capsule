@@ -34,10 +34,10 @@ function cellClass(count, tone) {
     return "bg-success-500/35 border-success-500/40"
   }
 
-  if (level === 1) return "bg-teal-500/10 border-teal-500/18"
-  if (level === 2) return "bg-emerald-500/10 border-emerald-500/18"
-  if (level === 3) return "bg-emerald-500/16 border-emerald-500/22"
-  return "bg-emerald-500/22 border-emerald-500/26"
+  if (level === 1) return "bg-accent-500/10 border-accent-500/18"
+  if (level === 2) return "bg-primary-500/10 border-primary-500/18"
+  if (level === 3) return "bg-primary-500/16 border-primary-500/22"
+  return "bg-primary-500/22 border-primary-500/26"
 }
 
 export default function Heatmap90d({ days, tone = "primary", layout = "compact", fillScale = 1 }) {

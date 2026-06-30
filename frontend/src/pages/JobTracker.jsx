@@ -146,7 +146,6 @@ function JobTracker() {
       setApplications(data.content || [])
       setTotalPages(data.totalPages || 0)
     } catch (err) {
-      console.error(err)
     } finally {
       setLoading(false)
     }
@@ -345,7 +344,7 @@ function JobTracker() {
           {/* Toggle advanced filters */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`btn-secondary w-full sm:w-auto flex items-center justify-center gap-2 ${showFilters ? 'bg-emerald-500/10 border-emerald-500/25' : ''}`}
+            className={`btn-secondary w-full sm:w-auto flex items-center justify-center gap-2 ${showFilters ? 'bg-primary-500/10 border-primary-500/25' : ''}`}
           >
             <FilterIcon />
             <span>Filters</span>
@@ -476,7 +475,7 @@ function JobTracker() {
                 onClick={() => setPage(i)}
                 className={`w-10 h-10 rounded-xl font-medium transition-all ${
                   page === i
-                    ? 'bg-emerald-500 text-white'
+                    ? 'bg-primary-500 text-white'
                     : 'text-dark-400 hover:bg-dark-700'
                 }`}
               >
@@ -514,12 +513,12 @@ function ApplicationCard({ app, index, onDelete, onClick, online }) {
   return (
     <div
       onClick={onClick}
-      className="card cursor-pointer group animate-fade-in-up hover:border-emerald-500/25"
+      className="card cursor-pointer group animate-fade-in-up hover:border-primary-500/25"
       style={{ animationDelay: `${index * 50}ms` }}
     >
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1 min-w-0">
-          <h3 className="text-base sm:text-lg font-semibold text-textPrimary truncate group-hover:text-emerald-200 transition-colors">
+          <h3 className="text-base sm:text-lg font-semibold text-textPrimary truncate group-hover:text-primary-200 transition-colors">
             {app.company}
           </h3>
           <p className="text-sm sm:text-base text-dark-400 truncate">{app.role}</p>
@@ -564,7 +563,7 @@ function ApplicationCard({ app, index, onDelete, onClick, online }) {
             e.stopPropagation()
             onClick()
           }}
-          className="text-sm text-emerald-200 hover:text-teal-200 font-medium flex items-center gap-1 transition-colors"
+          className="text-sm text-primary-200 hover:text-accent-200 font-medium flex items-center gap-1 transition-colors"
         >
           View details
           <ArrowRightIcon />

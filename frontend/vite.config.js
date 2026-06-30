@@ -52,8 +52,9 @@ export default defineConfig(({ mode }) => {
           globPatterns: ['**/*.{js,css,html,svg,png,ico,txt,woff2}'],
         },
         devOptions: {
-          // Disable SW in dev; use `npm run build && npm run preview` to test offline.
-          enabled: false,
+          // Enable SW in dev so Push Notifications can be tested locally
+          enabled: true,
+          type: 'module',
         },
       }),
     ],

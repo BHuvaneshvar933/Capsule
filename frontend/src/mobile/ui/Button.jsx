@@ -21,8 +21,8 @@ export default function Button({
 
   const variants = {
     primary:
-      "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/15 " +
-      "hover:from-emerald-400 hover:to-teal-400 hover:shadow-glow",
+      "bg-gradient-to-r from-primary-500 to-accent-500 text-white shadow-lg shadow-primary-500/15 " +
+      "hover:from-primary-400 hover:to-accent-400 hover:shadow-glow",
     secondary:
       "bg-surfaceAlt/60 text-textPrimary border border-white/10 shadow-inner-light " +
       "hover:bg-surfaceAlt/75 hover:border-white/15",

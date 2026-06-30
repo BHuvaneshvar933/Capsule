@@ -24,7 +24,7 @@ export function getNotificationPermission() {
 }
 
 export async function getVapidPublicKey() {
-  const res = await api.get("/api/push/public-key")
+  const res = await api.get("/api/notifications/vapid-key")
   return (res.data || "").trim()
 }
 
@@ -59,13 +59,21 @@ export async function subscribeToPush() {
     throw new Error("Service worker not ready yet. Reload the app once and try again.")
   }
 
+  // Clear any existing (stale) subscription first. If the VAPID keys on the server changed,
+  // subscribing again without unsubscribing will throw a DOMException (InvalidStateError)
+  // which gets swallowed by generic error handlers.
+  const existingSub = await reg.pushManager.getSubscription()
+  if (existingSub) {
+    await existingSub.unsubscribe()
+  }
+
   const sub = await reg.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: urlBase64ToUint8Array(publicKey),
   })
 
   const json = sub.toJSON()
-  await api.post("/api/push/subscribe", {
+  await api.post("/api/notifications/register-device", {
     endpoint: json.endpoint,
     keys: json.keys,
     userAgent: navigator.userAgent,
@@ -79,7 +87,7 @@ export async function unsubscribeFromPush() {
   if (!sub) return
   const json = sub.toJSON()
   try {
-    await api.post("/api/push/unsubscribe", { endpoint: json.endpoint })
+    await api.post("/api/notifications/unregister-device", { endpoint: json.endpoint })
   } catch {
     // ignore
   }

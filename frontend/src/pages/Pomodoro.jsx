@@ -93,10 +93,10 @@ function parseTags(raw) {
 }
 
 function intensityClass(minutes) {
-  if (minutes > 180) return "bg-emerald-500/20 border-emerald-500/30"
-  if (minutes > 120) return "bg-teal-500/16 border-teal-500/25"
-  if (minutes > 60) return "bg-emerald-500/12 border-emerald-500/22"
-  if (minutes > 0) return "bg-teal-500/10 border-teal-500/18"
+  if (minutes > 180) return "bg-primary-500/20 border-primary-500/30"
+  if (minutes > 120) return "bg-accent-500/16 border-accent-500/25"
+  if (minutes > 60) return "bg-primary-500/12 border-primary-500/22"
+  if (minutes > 0) return "bg-accent-500/10 border-accent-500/18"
   return "bg-dark-800/30 border-dark-700"
 }
 
@@ -434,51 +434,64 @@ export default function Pomodoro() {
                 <div className="text-dark-400 text-sm">Mode</div>
                 <div className="text-white font-semibold text-lg">{mode.label}</div>
               </div>
-              <div className="grid grid-cols-3 gap-1.5 w-full lg:w-auto lg:flex lg:gap-2">
-                {modes.map((m, idx) => (
-                  <button
-                    key={m.id}
-                    type="button"
-                    disabled={isRunning}
-                    onClick={() => setModeIndex(idx)}
-                    className={`w-full lg:w-auto min-h-[40px] px-2 py-2 rounded-none sm:rounded-xl border-b-2 sm:border-b-0 sm:border text-[12px] sm:text-sm leading-tight whitespace-nowrap truncate font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
-                      idx === modeIndex
-                        ? "border-emerald-400 sm:border-emerald-500/30 bg-transparent sm:bg-emerald-500/10 text-emerald-200"
-                        : "border-transparent sm:border-dark-700 bg-transparent sm:bg-dark-800/40 text-dark-400 sm:text-dark-300 hover:text-white sm:hover:border-dark-600"
-                    }`}
-                  >
-                    {m.label}
-                  </button>
-                ))}
+              <div className="flex w-full lg:w-auto bg-[#0a0a0a] rounded-2xl p-1 shadow-neu-pressed">
+                {modes.map((m, idx) => {
+                  const isActive = idx === modeIndex
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      disabled={isRunning}
+                      onClick={() => setModeIndex(idx)}
+                      className={`flex-1 lg:flex-none min-h-[40px] px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
+                        isActive
+                          ? "bg-surface shadow-neu-elevated text-primary-500"
+                          : "bg-transparent text-dark-500 hover:text-textPrimary"
+                      }`}
+                    >
+                      {m.label}
+                    </button>
+                  )
+                })}
               </div>
             </div>
 
-            <div className="mt-8 flex items-center justify-center">
-              <div className="relative w-[220px] h-[220px] sm:w-[240px] sm:h-[240px]">
-                <svg viewBox="0 0 200 200" className="w-full h-full">
+            <div className="mt-10 flex items-center justify-center">
+              <div className={`relative w-[240px] h-[240px] sm:w-[280px] sm:h-[280px] rounded-full flex items-center justify-center shadow-neu-elevated transition-transform duration-500 ${isRunning ? 'scale-105 shadow-glow' : ''}`}>
+                <div className="absolute inset-2 rounded-full shadow-neu-pressed pointer-events-none" />
+                <svg viewBox="0 0 200 200" className="w-full h-full absolute inset-0 drop-shadow-xl z-10">
                   <defs>
                     <linearGradient id="workGrad" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0%" stopColor="#3457b8" />
-                      <stop offset="100%" stopColor="#5b78d6" />
+                      <stop offset="0%" stopColor="#efd066" />
+                      <stop offset="100%" stopColor="#aa8c2c" />
+                    </linearGradient>
+                    <linearGradient id="breakGrad" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stopColor="#e4e4e7" />
+                      <stop offset="100%" stopColor="#a1a1aa" />
                     </linearGradient>
                   </defs>
-                  <circle cx="100" cy="100" r={ring.radius} stroke="rgba(51,65,85,0.85)" strokeWidth="12" fill="none" />
+                  <circle cx="100" cy="100" r={ring.radius} stroke="rgba(255,255,255,0.02)" strokeWidth="14" fill="none" />
                   <circle
                     cx="100"
                     cy="100"
                     r={ring.radius}
-                    stroke={mode.id === "work" ? "url(#workGrad)" : "#22c55e"}
-                    strokeWidth="12"
+                    stroke={mode.id === "work" ? "url(#workGrad)" : "url(#breakGrad)"}
+                    strokeWidth="14"
                     fill="none"
                     strokeLinecap="round"
                     strokeDasharray={ring.circumference}
                     strokeDashoffset={ring.offset}
                     transform="rotate(-90 100 100)"
+                    className="transition-[stroke-dashoffset] duration-500 ease-linear"
                   />
                 </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-5xl font-bold text-white tracking-tight">{formatTimer(timeLeft)}</div>
-                  <div className="mt-2 text-sm text-dark-400">{mode.id === "work" ? "Focus time" : "Break time"}</div>
+                <div className={`absolute inset-0 flex flex-col items-center justify-center z-20 transition-all duration-300 ${isRunning ? 'scale-110' : ''}`}>
+                  <div className="text-5xl sm:text-6xl font-black text-white tracking-tighter drop-shadow-md">
+                    {formatTimer(timeLeft)}
+                  </div>
+                  <div className="mt-1 text-sm font-semibold tracking-widest uppercase text-dark-500">
+                    {mode.id === "work" ? "Focus" : "Break"}
+                  </div>
                 </div>
               </div>
             </div>
@@ -515,7 +528,7 @@ export default function Pomodoro() {
                       <span
                         key={i}
                         className={`w-2.5 h-2.5 rounded-full border ${
-                          filled ? "bg-emerald-400 border-emerald-400" : "bg-dark-800 border-dark-600"
+                          filled ? "bg-primary-400 border-primary-400" : "bg-dark-800 border-dark-600"
                         }`}
                       />
                     )
@@ -660,7 +673,7 @@ export default function Pomodoro() {
                       disabled={!inRange}
                       onClick={() => setSelectedDate(dayStr)}
                       className={`h-10 rounded-xl border flex items-center justify-center transition-all ${intensityClass(minutes)} ${
-                        selected ? "ring-2 ring-emerald-500/35" : "hover:border-dark-600"
+                        selected ? "ring-2 ring-primary-500/35" : "hover:border-dark-600"
                       } ${!inRange ? "opacity-35 cursor-not-allowed" : ""}`}
                       title={`${dayStr} • ${minutes} min`}
                     >

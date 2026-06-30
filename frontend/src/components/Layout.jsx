@@ -1,8 +1,9 @@
-import { NavLink, useLocation, useNavigate } from "react-router-dom"
+﻿import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import { logout } from "../utils/auth"
 import { useOnlineStatus } from "../hooks/useOnlineStatus"
 import { getToken } from "../utils/auth"
 import BackendWakeBanner from "./BackendWakeBanner"
+import JoiChat from "./JoiChat"
 
 // Icons as simple SVG components
 const DashboardIcon = () => (
@@ -199,7 +200,7 @@ function Layout({ children }) {
           {/* Logo area */}
           <div className="p-6 border-b border-dark-700/50">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg shadow-emerald-500/18">
+              <div className="p-2 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl shadow-lg shadow-primary-500/18">
                 <LogoMark />
               </div>
               <div>
@@ -258,7 +259,7 @@ function Layout({ children }) {
               <MenuIcon />
             </button>
             <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg">
+              <div className="p-1.5 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg">
                 <LogoMark className="w-6 h-6" />
               </div>
               <span className="font-bold text-white">Capsule</span>
@@ -283,6 +284,7 @@ function Layout({ children }) {
           </div>
          </main>
       </div>
+      <JoiChat />
     </div>
   )
 }

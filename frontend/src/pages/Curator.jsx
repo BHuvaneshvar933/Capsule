@@ -115,8 +115,8 @@ const TrashIcon = () => (
 
 function badgeStyle(type) {
   const base = "text-xs px-2.5 py-1 rounded-full border"
-  if (type === "GITHUB_REPO") return `${base} border-emerald-500/30 bg-emerald-500/10 text-emerald-200`
-  if (type === "TWEET") return `${base} border-teal-500/30 bg-teal-500/10 text-teal-200`
+  if (type === "GITHUB_REPO") return `${base} border-primary-500/30 bg-primary-500/10 text-primary-200`
+  if (type === "TWEET") return `${base} border-accent-500/30 bg-accent-500/10 text-accent-200`
   if (type === "IMAGE") return `${base} border-sky-500/30 bg-sky-500/10 text-sky-200`
   if (type === "VIDEO") return `${base} border-indigo-500/30 bg-indigo-500/10 text-indigo-200`
   if (type === "ARTICLE") return `${base} border-amber-500/30 bg-amber-500/10 text-amber-200`
@@ -270,7 +270,7 @@ export default function Curator() {
       />
 
       <div className="card overflow-hidden relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-surfaceAlt/25 to-teal-500/8" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-500/10 via-surfaceAlt/25 to-accent-500/8" />
         <div className="relative flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
           <div>
             <h1 className="text-2xl lg:text-3xl font-bold text-white tracking-tight">Content Curator</h1>
@@ -305,7 +305,7 @@ export default function Curator() {
                 className={
                   "whitespace-nowrap px-3 py-2 rounded-xl text-sm font-medium border transition-all duration-200 " +
                   (active
-                    ? "bg-emerald-500/10 border-emerald-500/25 text-textPrimary"
+                    ? "bg-primary-500/10 border-primary-500/25 text-textPrimary"
                     : "bg-surfaceAlt/40 border-white/10 text-textSecondary hover:text-textPrimary hover:bg-surfaceAlt/60")
                 }
               >
@@ -340,7 +340,7 @@ export default function Curator() {
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className={badgeStyle(x.type)}>{typeLabel(x.type)}</span>
-                    {x.favorite ? <span className="text-xs text-emerald-200">Favorited</span> : null}
+                    {x.favorite ? <span className="text-xs text-primary-200">Favorited</span> : null}
                   </div>
                   <div className="mt-2 text-white font-semibold leading-snug">{x.title}</div>
                 </div>

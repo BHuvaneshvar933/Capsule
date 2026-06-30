@@ -208,7 +208,7 @@ function Register() {
               Already have an account?{" "}
               <Link 
                 to="/" 
-                className="text-emerald-300 hover:text-teal-200 font-medium transition-colors"
+                className="text-primary-300 hover:text-accent-200 font-medium transition-colors"
               >
                 Sign in
               </Link>

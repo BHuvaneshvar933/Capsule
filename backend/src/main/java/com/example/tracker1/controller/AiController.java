@@ -4,7 +4,7 @@ import com.example.tracker1.model.dto.*;
 import com.example.tracker1.model.entity.InterviewQuestionSet;
 import com.example.tracker1.model.entity.ResumeDocument;
 import com.example.tracker1.repository.InterviewQuestionSetRepository;
- import com.example.tracker1.service.GeminiService;
+import com.example.tracker1.service.ResumeAiService;
 import com.example.tracker1.service.MetricsService;
 import com.example.tracker1.service.ResumeService;
 import com.example.tracker1.util.SecurityUtil;
@@ -25,15 +25,9 @@ import java.util.List;
 public class AiController {
 
     private final ResumeService resumeService;
-      private final GeminiService geminiService;
+    private final ResumeAiService resumeAiService;
     private final MetricsService metricsService;
     private final InterviewQuestionSetRepository interviewQuestionSetRepository;
-
-    // Debug helper: lists models available for your GEMINI_API_KEY
-    @GetMapping("/ai/models")
-    public List<String> listGeminiModels() {
-        return geminiService.listModels();
-    }
 
     // Helper: upload resume once and reuse resumeId
     @PostMapping(value = "/resumes", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -75,7 +69,7 @@ public class AiController {
 
         ResumeDocument resume = resumeService.saveResume(resumeFile);
         long t0 = System.nanoTime();
-        ResumeJobMatchResponse analysis = geminiService.analyzeResume(resume.getExtractedText(), jobDescription);
+        ResumeJobMatchResponse analysis = resumeAiService.analyzeResume(resume.getExtractedText(), jobDescription);
         long durationMs = Math.max(0, (System.nanoTime() - t0) / 1_000_000);
         metricsService.recordAiAnalyze(durationMs);
 
@@ -92,7 +86,7 @@ public class AiController {
         ResumeDocument resume = resumeService.getResumeOrThrow(request.getResumeId());
 
         long t0 = System.nanoTime();
-        GenerateQuestionsResponse payload = geminiService.generateQuestions(resume.getExtractedText(), request);
+        GenerateQuestionsResponse payload = resumeAiService.generateQuestions(resume.getExtractedText(), request);
         long durationMs = Math.max(0, (System.nanoTime() - t0) / 1_000_000);
         metricsService.recordAiQuestions(durationMs);
 

@@ -22,11 +22,11 @@ export default function BottomNav({ items }) {
                     "flex flex-col items-center justify-center gap-1",
                     "transition-all duration-200 active:scale-[0.98]",
                     active
-                      ? "bg-emerald-500/10 border border-emerald-500/25 text-emerald-200 shadow-[0_0_0_1px_rgba(34,197,94,0.14)]"
+                      ? "bg-primary-500/10 border border-primary-500/25 text-primary-200 shadow-[0_0_0_1px_rgba(34,197,94,0.14)]"
                       : "text-textMuted hover:text-textPrimary hover:bg-surfaceAlt/60"
                   )}
                 >
-                  <Icon className={clsx("w-5 h-5", active ? "text-emerald-200" : "text-textMuted")} />
+                  <Icon className={clsx("w-5 h-5", active ? "text-primary-200" : "text-textMuted")} />
                   <span className={clsx("text-[11px] leading-none", active ? "text-textPrimary" : "text-textMuted")}>
                     {item.label}
                   </span>

@@ -99,18 +99,6 @@ export default function Dashboard() {
 
   const QUICK_LINKS_KEY = "dashboard:quickLinks"
 
-  useTopBarActions(
-    <Button
-      variant="primary"
-      size="sm"
-      className="px-4 rounded-2xl"
-      onClick={() => navigate("/job-tracker")}
-      aria-label="Open Job Tracker"
-    >
-      Jobs
-    </Button>,
-    [navigate]
-  )
 
   const [jobsCount, setJobsCount] = useState(0)
   const [apps, setApps] = useState([])
@@ -499,7 +487,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 overflow-x-hidden">
       <div className="card overflow-hidden relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-surfaceAlt/25 to-teal-500/8" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-500/10 via-surfaceAlt/25 to-accent-500/8" />
         <div className="relative">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
             <div>
@@ -713,7 +701,7 @@ export default function Dashboard() {
                   >
                     <div className="text-white font-medium truncate">{t.title}</div>
                     <div className="text-xs text-dark-500 mt-1 flex flex-wrap items-center gap-2">
-                      {t.category ? <span className="text-emerald-200">{t.category}</span> : null}
+                      {t.category ? <span className="text-primary-200">{t.category}</span> : null}
                       {t.dueDate ? <span>Due: {String(t.dueDate)}</span> : <span>No due date</span>}
                     </div>
                   </button>
@@ -744,7 +732,7 @@ export default function Dashboard() {
                       <div className="text-xs text-dark-500 whitespace-nowrap">{x.minutes} min ({x.pct}%)</div>
                     </div>
                     <div className="mt-2 h-2 rounded-full bg-dark-900/40 border border-dark-700 overflow-hidden">
-                      <div className="h-full bg-emerald-500/35" style={{ width: `${x.pct}%` }} />
+                      <div className="h-full bg-primary-500/35" style={{ width: `${x.pct}%` }} />
                     </div>
                   </div>
                 ))}

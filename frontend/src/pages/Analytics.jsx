@@ -353,7 +353,7 @@ function Analytics() {
     <div className="space-y-6">
       {/* Desktop header (mobile uses TopBar actions) */}
       <div className="card overflow-hidden relative sm:block hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/8 via-surfaceAlt/25 to-teal-500/6" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-500/8 via-surfaceAlt/25 to-accent-500/6" />
         <div className="relative">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
@@ -463,7 +463,7 @@ function Analytics() {
 function StatCard({ label, value, tone }) {
   const dot =
     tone === "positive"
-      ? "bg-emerald-400"
+      ? "bg-primary-400"
       : tone === "negative"
         ? "bg-danger-400"
         : "bg-dark-500"
@@ -488,7 +488,7 @@ function SentenceTrend({ text, delta, suffix, unit = "" }) {
 
   const num = unit ? formatMaybeDecimal(n) : String(Math.trunc(n))
   const deltaText = `${n > 0 ? "+" : ""}${num}${unit}`
-  const tone = n > 0 ? "text-emerald-300" : "text-rose-300"
+  const tone = n > 0 ? "text-primary-300" : "text-rose-300"
 
   return (
     <div className="text-sm text-dark-300">
@@ -501,10 +501,10 @@ function SentenceTrend({ text, delta, suffix, unit = "" }) {
 }
 
 function InsightCard({ title, detail, tone, emphasis }) {
-  const left = tone === "good" ? "bg-emerald-400" : tone === "warning" ? "bg-warning-400" : "bg-dark-500"
+  const left = tone === "good" ? "bg-primary-400" : tone === "warning" ? "bg-warning-400" : "bg-dark-500"
   const wrap =
     emphasis
-      ? "border-emerald-500/25 bg-emerald-500/5"
+      ? "border-primary-500/25 bg-primary-500/5"
       : tone === "warning"
         ? "border-warning-500/30 bg-warning-500/10"
         : "border-dark-700 bg-dark-900/20"
@@ -522,7 +522,7 @@ function InsightCard({ title, detail, tone, emphasis }) {
 
 function BreakdownRow({ label, count, total, tone }) {
   const pct = total > 0 ? (count / total) * 100 : 0
-  const bar = tone === "good" ? "bg-emerald-500/60" : tone === "bad" ? "bg-rose-500/60" : "bg-white/25"
+  const bar = tone === "good" ? "bg-primary-500/60" : tone === "bad" ? "bg-rose-500/60" : "bg-white/25"
 
   return (
     <div>

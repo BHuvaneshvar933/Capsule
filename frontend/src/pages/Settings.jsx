@@ -1,26 +1,5 @@
-import { useEffect, useMemo, useState } from "react"
-import { useSearchParams } from "react-router-dom"
-import { getMe } from "../api/account"
-import { useOnlineStatus } from "../hooks/useOnlineStatus"
-import {
-  addPomodoro,
-  ensureDefaultHabits,
-  getHabitDayLog,
-  getSetting,
-  listHabits,
-  removeSetting,
-  setHabitDoneForDay,
-  setSetting,
-} from "../db"
-import { summarizeAiMetrics } from "../perf/metrics"
-import {
-  fetchGitHubContributions90d,
-  fetchGitHubProfile,
-  fetchLeetCodeProfile,
-  normalizeGitHubUsername,
-  normalizeLeetCodeUsername,
-} from "../utils/integrations"
-import { Heatmap90Grid } from "../components/ActivityHeatmap90Widget"
+
+
 import PushToggle from "../components/PushToggle"
 import Toast from "../components/Toast"
 import ConfirmDialog from "../components/ConfirmDialog"
@@ -42,13 +21,7 @@ const BellIcon = () => (
   </svg>
 )
 
-const DatabaseIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6c0 1.657 3.582 3 8 3s8-1.343 8-3-3.582-3-8-3-8 1.343-8 3z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6" />
-  </svg>
-)
+
 
 export default function Settings() {
   const online = useOnlineStatus()
@@ -72,23 +45,6 @@ export default function Settings() {
   // Sign-out is handled from the main sidebar; keep Settings focused on preferences.
 
 
-  const [ghUsername, setGhUsername] = useState("")
-  const [ghProfile, setGhProfile] = useState(null)
-  const [ghContrib, setGhContrib] = useState([])
-  const [ghSyncedAt, setGhSyncedAt] = useState("")
-  const [ghBusy, setGhBusy] = useState(false)
-  const [ghError, setGhError] = useState("")
-
-  const [lcUsername, setLcUsername] = useState("")
-  const [lcProfile, setLcProfile] = useState(null)
-  const [lcSyncedAt, setLcSyncedAt] = useState("")
-  const [lcBusy, setLcBusy] = useState(false)
-  const [lcError, setLcError] = useState("")
-
-  const [confirmClearIntegrations, setConfirmClearIntegrations] = useState(false)
-
-  const [demoBusy, setDemoBusy] = useState(false)
-  const [aiPerf, setAiPerf] = useState({ analyze: null, questions: null })
 
   const refreshMe = async () => {
     if (!online) return
@@ -104,61 +60,6 @@ export default function Settings() {
       setMeLoading(false)
     }
   }
-
-  const refreshAiPerf = async () => {
-    const analyze = await summarizeAiMetrics({ kind: "analyzeResume" })
-    const questions = await summarizeAiMetrics({ kind: "generateQuestions" })
-    setAiPerf({ analyze, questions })
-  }
-
-  const seedLocalDemo = async () => {
-    try {
-      setDemoBusy(true)
-      await ensureDefaultHabits()
-      const habits = await listHabits()
-
-      const yyyyMmDdLocal = (d) => {
-        const pad = (n) => String(n).padStart(2, "0")
-        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-      }
-
-      // Seed habit completion for the last 7 days.
-      for (let i = 0; i < 7; i += 1) {
-        const d = new Date()
-        d.setDate(d.getDate() - i)
-        const dayKey = yyyyMmDdLocal(d)
-        // eslint-disable-next-line no-await-in-loop
-        const existing = await getHabitDayLog(dayKey)
-        const alreadyAny = existing && Object.keys(existing).length > 0
-        if (!alreadyAny) {
-          const toMark = habits.slice(0, Math.min(3, habits.length))
-          for (const h of toMark) {
-            // eslint-disable-next-line no-await-in-loop
-            await setHabitDoneForDay(dayKey, h.id, true)
-          }
-        }
-      }
-
-      // Seed pomodoros (work sessions) for the last 7 days.
-      for (let i = 0; i < 7; i += 1) {
-        const d = new Date()
-        d.setDate(d.getDate() - i)
-        const iso = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 19, 0, 0).toISOString()
-        // eslint-disable-next-line no-await-in-loop
-        await addPomodoro({ duration: 25, type: "work", taskTitle: "Interview Prep", tags: ["demo"], completedAt: iso })
-        // eslint-disable-next-line no-await-in-loop
-        await addPomodoro({ duration: 50, type: "work", taskTitle: "Job Applications", tags: ["demo"], completedAt: iso })
-      }
-
-      await refreshAiPerf()
-      setToast({ open: true, message: "Seeded local demo data (pomodoros + habit logs).", tone: "success" })
-    } catch (e) {
-      setToast({ open: true, message: toUserMessage(e, "Failed to seed local demo data"), tone: "error" })
-    } finally {
-      setDemoBusy(false)
-    }
-  }
-
   useTopBarActions(
     isMobile ? null : (
       <Button
@@ -180,10 +81,6 @@ export default function Settings() {
   }, [online])
 
   useEffect(() => {
-    refreshAiPerf()
-  }, [])
-
-  useEffect(() => {
     if (!normalizedTabFromUrl) return
     if (normalizedTabFromUrl === tab) return
     setTab(normalizedTabFromUrl)
@@ -198,166 +95,13 @@ export default function Settings() {
     setSearchParams(next)
   }
 
-  useEffect(() => {
-    if (tab !== "integrations") return
-    let mounted = true
-
-    const load = async () => {
-      try {
-        const [
-          storedGhUsername,
-          storedGhProfile,
-          storedGhContrib,
-          storedGhSyncedAt,
-          storedLcUsername,
-          storedLcProfile,
-          storedLcSyncedAt,
-        ] = await Promise.all([
-          getSetting("integrations:githubUsername"),
-          getSetting("integrations:githubProfile"),
-          getSetting("integrations:githubContrib90d"),
-          getSetting("integrations:githubSyncedAt"),
-          getSetting("integrations:leetcodeUsername"),
-          getSetting("integrations:leetcodeProfile"),
-          getSetting("integrations:leetcodeSyncedAt"),
-        ])
-
-        if (!mounted) return
-        setGhUsername(storedGhUsername || "")
-        setGhProfile(storedGhProfile || null)
-        setGhContrib(Array.isArray(storedGhContrib) ? storedGhContrib : [])
-        setGhSyncedAt(storedGhSyncedAt || "")
-
-        setLcUsername(storedLcUsername || "")
-        setLcProfile(storedLcProfile || null)
-        setLcSyncedAt(storedLcSyncedAt || "")
-      } catch {
-        // no-op
-      }
-    }
-
-    load()
-    return () => {
-      mounted = false
-    }
-  }, [tab])
 
   // (removed) sign out action
-
-  const syncGitHub = async () => {
-    const u = normalizeGitHubUsername(ghUsername)
-    setGhUsername(u)
-    setGhError("")
-    if (!u) {
-      setGhError("Enter a GitHub username")
-      return
-    }
-    if (!online) {
-      setGhError("You are offline")
-      return
-    }
-
-    try {
-      setGhBusy(true)
-      const [profile, contrib90d] = await Promise.all([
-        fetchGitHubProfile(u),
-        fetchGitHubContributions90d(u),
-      ])
-      const iso = new Date().toISOString()
-
-      await Promise.all([
-        setSetting("integrations:githubUsername", u),
-        setSetting("integrations:githubProfile", profile),
-        setSetting("integrations:githubContrib90d", contrib90d),
-        setSetting("integrations:githubSyncedAt", iso),
-      ])
-
-      setGhProfile(profile)
-      setGhContrib(contrib90d)
-      setGhSyncedAt(iso)
-      setToast({ open: true, message: "GitHub synced.", tone: "success" })
-    } catch (e) {
-      setGhError(toUserMessage(e, "Couldn't sync GitHub right now. Please try again."))
-    } finally {
-      setGhBusy(false)
-    }
-  }
-
-  const syncLeetCode = async () => {
-    const u = normalizeLeetCodeUsername(lcUsername)
-    setLcUsername(u)
-    setLcError("")
-    if (!u) {
-      setLcError("Enter a LeetCode username")
-      return
-    }
-    if (!online) {
-      setLcError("You are offline")
-      return
-    }
-
-    try {
-      setLcBusy(true)
-      const profile = await fetchLeetCodeProfile(u)
-      const iso = new Date().toISOString()
-
-      await Promise.all([
-        setSetting("integrations:leetcodeUsername", u),
-        setSetting("integrations:leetcodeProfile", profile),
-        setSetting("integrations:leetcodeSyncedAt", iso),
-      ])
-
-      setLcProfile(profile)
-      setLcSyncedAt(iso)
-      setToast({ open: true, message: "LeetCode synced.", tone: "success" })
-    } catch (e) {
-      setLcError(toUserMessage(e, "Couldn't sync LeetCode right now. Please try again."))
-    } finally {
-      setLcBusy(false)
-    }
-  }
-
-  const clearIntegrations = async () => {
-    await Promise.all([
-      removeSetting("integrations:githubUsername"),
-      removeSetting("integrations:githubProfile"),
-      removeSetting("integrations:githubContrib90d"),
-      removeSetting("integrations:githubSyncedAt"),
-      removeSetting("integrations:leetcodeUsername"),
-      removeSetting("integrations:leetcodeProfile"),
-      removeSetting("integrations:leetcodeSyncedAt"),
-    ])
-
-    setGhUsername("")
-    setGhProfile(null)
-    setGhContrib([])
-    setGhSyncedAt("")
-    setGhError("")
-
-    setLcUsername("")
-    setLcProfile(null)
-    setLcSyncedAt("")
-    setLcError("")
-
-    setToast({ open: true, message: "Integrations cleared.", tone: "success" })
-  }
 
   return (
     <div className="space-y-6">
       <Toast open={toast.open} message={toast.message} tone={toast.tone} onClose={() => setToast((t) => ({ ...t, open: false }))} />
-      <ConfirmDialog
-        open={confirmClearIntegrations}
-        title="Clear integrations?"
-        message="This removes cached GitHub/LeetCode usernames and stats from this device."
-        confirmText="Clear"
-        cancelText="Cancel"
-        tone="danger"
-        onCancel={() => setConfirmClearIntegrations(false)}
-        onConfirm={async () => {
-          setConfirmClearIntegrations(false)
-          await clearIntegrations()
-        }}
-      />
+
 
       <div className="card overflow-hidden">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -381,9 +125,7 @@ export default function Settings() {
             <TabButton active={tab === "notifications"} onClick={() => setTabAndUrl("notifications")} icon={<BellIcon />}>
               Notifications
             </TabButton>
-            <TabButton active={tab === "integrations"} onClick={() => setTabAndUrl("integrations")} icon={<DatabaseIcon />}>
-              Integrations
-            </TabButton>
+            
           </nav>
         </div>
       </div>
@@ -417,189 +159,6 @@ export default function Settings() {
               </div>
             )}
           </div>
-
-          <div className="card">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="text-xl font-semibold text-white">Demo & Metrics</h2>
-                <p className="text-dark-400 text-sm mt-1">Week 1 demo data and performance reporting helpers.</p>
-              </div>
-              <button
-                type="button"
-                onClick={seedLocalDemo}
-                disabled={demoBusy}
-                className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {demoBusy ? "Seeding…" : "Seed local demo"}
-              </button>
-            </div>
-
-            <div className="mt-5 grid sm:grid-cols-2 gap-4">
-              <div className="rounded-2xl border border-dark-700 bg-dark-800/40 px-4 py-3">
-                <div className="text-dark-400 text-xs">AI: analyzeResume (browser)</div>
-                <div className="mt-1 text-white font-semibold">
-                  {aiPerf.analyze ? `${aiPerf.analyze.avgMs}ms avg (max ${aiPerf.analyze.maxMs}ms, n=${aiPerf.analyze.count})` : "—"}
-                </div>
-              </div>
-              <div className="rounded-2xl border border-dark-700 bg-dark-800/40 px-4 py-3">
-                <div className="text-dark-400 text-xs">AI: generateQuestions (browser)</div>
-                <div className="mt-1 text-white font-semibold">
-                  {aiPerf.questions ? `${aiPerf.questions.avgMs}ms avg (max ${aiPerf.questions.maxMs}ms, n=${aiPerf.questions.count})` : "—"}
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-3 text-xs text-dark-500">
-              Backend exposes server-side stats at <span className="font-mono">/api/metrics</span>.
-            </div>
-          </div>
-        </div>
-      )}
-
-      {tab === "integrations" && (
-        <div className="space-y-6">
-          <div className="card">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="text-xl font-semibold text-white">Profile & Integrations</h2>
-                <p className="text-dark-400 text-sm mt-1">Connect public profiles and cache stats locally.</p>
-              </div>
-              <button type="button" onClick={() => setConfirmClearIntegrations(true)} className="btn-danger">
-                Clear cache
-              </button>
-            </div>
-            <div className="mt-4 rounded-2xl border border-dark-700 bg-dark-800/40 px-4 py-3 text-dark-300 text-sm">
-              Add your GitHub and LeetCode usernames, sync public stats, and use them across the app.
-            </div>
-
-            {!online && (
-              <div className="mt-4 px-4 py-3 rounded-2xl border border-warning-500/30 bg-warning-500/10 text-warning-300 text-sm">
-                You are offline. You can still view cached data, but syncing requires internet.
-              </div>
-            )}
-
-            <div className="mt-6 grid sm:grid-cols-2 gap-6">
-              <div className="rounded-2xl border border-dark-700 bg-dark-800/30 p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="text-white font-semibold">GitHub</div>
-                  <button type="button" onClick={syncGitHub} disabled={!online || ghBusy} className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed">
-                    {ghBusy ? "Syncing…" : "Sync"}
-                  </button>
-                </div>
-                <div className="mt-3">
-                  <label className="block text-xs text-dark-400">Username</label>
-                  <input
-                    value={ghUsername}
-                    onChange={(e) => setGhUsername(e.target.value)}
-                    placeholder="e.g. torvalds"
-                    className="input-field mt-1"
-                  />
-                  {ghError && <div className="mt-2 text-sm text-danger-300">{ghError}</div>}
-                </div>
-
-                {ghProfile && (
-                  <div className="mt-4 pt-4 border-t border-dark-700">
-                    <div className="flex items-start gap-3">
-                      {ghProfile.avatarUrl ? (
-                        <img
-                          src={ghProfile.avatarUrl}
-                          alt=""
-                          className="w-10 h-10 rounded-xl border border-dark-700 bg-dark-900/30"
-                          referrerPolicy="no-referrer"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 rounded-xl border border-dark-700 bg-dark-900/30" />
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <div className="text-white font-semibold truncate">{ghProfile.name || ghProfile.login}</div>
-                        <div className="text-dark-400 text-sm truncate">@{ghProfile.login}</div>
-                      </div>
-                      {ghProfile.htmlUrl && (
-                        <a className="btn-ghost text-sm" href={ghProfile.htmlUrl} target="_blank" rel="noreferrer">
-                          Open
-                        </a>
-                      )}
-                    </div>
-
-                    {ghProfile.bio && (
-                      <div className="mt-3 text-sm text-dark-300 break-words">{ghProfile.bio}</div>
-                    )}
-
-                    <div className="mt-4 grid grid-cols-3 gap-2">
-                      <MiniStat label="Repos" value={ghProfile.publicRepos} />
-                      <MiniStat label="Followers" value={ghProfile.followers} />
-                      <MiniStat label="Following" value={ghProfile.following} />
-                    </div>
-
-                    <div className="mt-4">
-                      <Heatmap90Grid days={ghContrib} tone="primary" unit="contributions" showHeader={false} />
-                      <div className="mt-2 text-xs text-dark-500">Last synced: {ghSyncedAt ? new Date(ghSyncedAt).toLocaleString() : "—"}</div>
-                    </div>
-                  </div>
-                )}
-
-                {!ghProfile && (
-                  <div className="mt-4 pt-4 border-t border-dark-700 text-sm text-dark-400">
-                    Not connected yet.
-                  </div>
-                )}
-              </div>
-
-              <div className="rounded-2xl border border-dark-700 bg-dark-800/30 p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="text-white font-semibold">LeetCode</div>
-                  <button type="button" onClick={syncLeetCode} disabled={!online || lcBusy} className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed">
-                    {lcBusy ? "Syncing…" : "Sync"}
-                  </button>
-                </div>
-                <div className="mt-3">
-                  <label className="block text-xs text-dark-400">Username</label>
-                  <input
-                    value={lcUsername}
-                    onChange={(e) => setLcUsername(e.target.value)}
-                    placeholder="e.g. johndoe"
-                    className="input-field mt-1"
-                  />
-                  {lcError && <div className="mt-2 text-sm text-danger-300">{lcError}</div>}
-                </div>
-
-                {lcProfile && (
-                  <div className="mt-4 pt-4 border-t border-dark-700">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <div className="text-white font-semibold truncate">@{lcProfile.username || lcUsername}</div>
-                        <div className="text-dark-400 text-sm">Solved: <span className="text-white font-semibold">{lcProfile.totalSolved || 0}</span></div>
-                      </div>
-                      {lcUsername && (
-                        <a className="btn-ghost text-sm" href={`https://leetcode.com/${encodeURIComponent(lcUsername)}/`} target="_blank" rel="noreferrer">
-                          Open
-                        </a>
-                      )}
-                    </div>
-
-                    <div className="mt-4 grid grid-cols-4 gap-2">
-                      <MiniStat label="Easy" value={lcProfile.easySolved} />
-                      <MiniStat label="Med" value={lcProfile.mediumSolved} />
-                      <MiniStat label="Hard" value={lcProfile.hardSolved} />
-                      <MiniStat label="Total" value={lcProfile.totalSolved} />
-                    </div>
-
-                    <div className="mt-4">
-                      <Heatmap90Grid days={lcProfile.submissionDays90d} tone="success" unit="submissions" showHeader={false} />
-                      <div className="mt-2 text-xs text-dark-500">Last synced: {lcSyncedAt ? new Date(lcSyncedAt).toLocaleString() : "—"}</div>
-                    </div>
-                  </div>
-                )}
-
-                {!lcProfile && (
-                  <div className="mt-4 pt-4 border-t border-dark-700 text-sm text-dark-400">
-                    Not connected yet.
-                  </div>
-                )}
-              </div>
-
-            </div>
-          </div>
         </div>
       )}
 
@@ -620,7 +179,7 @@ function TabButton({ active, onClick, icon, children }) {
       onClick={onClick}
       className={`flex items-center gap-2 px-3 sm:px-4 py-3 font-medium text-sm whitespace-nowrap border-b-2 transition-all ${
         active
-          ? "text-emerald-300 border-emerald-400"
+          ? "text-primary-300 border-primary-400"
           : "text-dark-400 border-transparent hover:text-white hover:border-dark-600"
       }`}
     >

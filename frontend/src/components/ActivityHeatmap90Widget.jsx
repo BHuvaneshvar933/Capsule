@@ -26,8 +26,8 @@ function addDaysLocal(d, days) {
 }
 
 function baseRgbForTone(tone) {
-  if (tone === "success") return [34, 197, 94] // green-500
-  return [16, 185, 129] // emerald-500
+  if (tone === "success") return [212, 175, 55] // gold (primary)
+  return [212, 175, 55] // primary-500
 }
 
 function cellVisual({ count, maxActivity, tone }) {

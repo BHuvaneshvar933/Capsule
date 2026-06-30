@@ -65,6 +65,8 @@ public class GlobalExceptionHandler {
             Exception ex,
             HttpServletRequest request) {
 
+        ex.printStackTrace(); // Log the stack trace
+
         return buildResponse(ex.getMessage(),
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 request.getRequestURI());

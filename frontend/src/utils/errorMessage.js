@@ -39,12 +39,18 @@ export function toUserMessage(err, fallback) {
   // Axios timeout
   if (err?.code === "ECONNABORTED") return "This is taking longer than expected. Please try again."
 
-  // Offline / DNS / network errors
+  // Offline / DNS / network errors, or frontend-thrown Errors
   if (!err?.response) {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       return "You're offline. Connect to the internet and try again."
     }
-    return "Couldn't reach the server. It may be starting up — please try again in a few seconds."
+    // If it's a generic Axios network error (e.g., ERR_NETWORK or Network Error)
+    const isNetworkError = err?.code === "ERR_NETWORK" || err?.message?.toLowerCase().includes("network error")
+    if (isNetworkError) {
+      return "Couldn't reach the server. It may be starting up — please try again in a few seconds."
+    }
+    // Otherwise, it's a frontend error (like a DOMException or custom Error)
+    return err?.message || fallback || "Something went wrong."
   }
 
   return apiMsg || fallback || "Something went wrong."

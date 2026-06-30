@@ -81,7 +81,7 @@ function SheetLink({ to, icon: Icon, label, onClick }) {
           [
             "w-full min-h-[48px] px-4 rounded-2xl flex items-center gap-3 transition-all duration-200 active:scale-[0.98]",
             isActive
-              ? "bg-emerald-500/10 border border-emerald-500/25 text-textPrimary"
+              ? "bg-primary-500/10 border border-primary-500/25 text-textPrimary"
               : "text-textSecondary hover:bg-surfaceAlt/60",
           ].join(" ")
         }

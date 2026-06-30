@@ -2,7 +2,7 @@ spring:
   ai:
     openai:
       base-url: https://api.groq.com/openai
-      api-key: ${GROQ_API_KEY:}
+      api-key: ${GROQ_API_KEY:dummy-key-to-allow-startup}
       chat:
         options:
           # Groq's super fast Llama 3.1 model

@@ -28,4 +28,4 @@ COPY --from=build /app/backend/target/*.jar /app/app.jar
 # Render sets PORT; app uses server.port=${PORT:5000}
 EXPOSE 5000
 
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-Xmx300m", "-jar", "/app/app.jar"]

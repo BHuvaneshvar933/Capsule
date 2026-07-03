@@ -44,7 +44,7 @@ public class JoiService {
         // Increase topK to ensure we grab enough context for specific queries.
         // Set similarity threshold to 0.0 to prevent specific queries from being dropped due to low semantic match scores.
         SearchRequest searchRequest = SearchRequest.defaults()
-                .withTopK(20)
+                .withTopK(5)
                 .withSimilarityThreshold(0.0);
 
         String systemPrompt = "You are Joi, a highly intelligent and professional AI career assistant. " +

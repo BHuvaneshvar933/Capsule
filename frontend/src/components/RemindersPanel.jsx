@@ -254,6 +254,8 @@ export default function RemindersPanel({ applicationId, todoId, open, onClose })
           </div>
         )}
       </div>
-    </>
+    </div>
+  </div>
+</>
   )
 }

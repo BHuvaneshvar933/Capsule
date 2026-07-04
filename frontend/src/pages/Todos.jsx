@@ -478,38 +478,14 @@ export default function Todos() {
         </div>
       )}
 
-      {openRemindersForId && (
-        <div
-          className="modal-overlay"
-          onClick={() => {
-            setOpenRemindersForId(null)
-            updateQueryParam("todoId", "")
-          }}
-        >
-          <div className="modal-content max-w-3xl" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <h2 className="text-2xl font-bold text-white">To-do reminders</h2>
-                <p className="text-dark-400 mt-1">Create a reminder and get a push notification (if enabled).</p>
-              </div>
-              <button
-                type="button"
-                className="btn-ghost"
-                onClick={() => {
-                  setOpenRemindersForId(null)
-                  updateQueryParam("todoId", "")
-                }}
-              >
-                Close
-              </button>
-            </div>
-
-            <div className="mt-6">
-              <RemindersPanel todoId={openRemindersForId} />
-            </div>
-          </div>
-        </div>
-      )}
+      <RemindersPanel 
+        todoId={openRemindersForId} 
+        open={!!openRemindersForId} 
+        onClose={() => {
+          setOpenRemindersForId(null)
+          updateQueryParam("todoId", "")
+        }}
+      />
 
       {showNew && (
         <div className="modal-overlay" onClick={() => setShowNew(false)}>

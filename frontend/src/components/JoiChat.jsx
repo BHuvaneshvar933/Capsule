@@ -42,14 +42,14 @@ export default function JoiChat() {
       {/* Floating Action Button (FAB) for triggering the Joi chat overlay */}
       <button
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 right-6 p-4 rounded-full bg-gradient-to-r from-primary-500 to-accent-600 text-white shadow-xl shadow-primary-500/20 hover:scale-105 transition-transform z-50 ${isOpen ? 'hidden' : 'flex'} items-center justify-center`}
+        className={`fixed bottom-24 md:bottom-6 right-4 md:right-6 p-4 rounded-full bg-gradient-to-r from-primary-500 to-accent-600 text-white shadow-xl shadow-primary-500/20 hover:scale-105 transition-transform z-50 ${isOpen ? 'hidden' : 'flex'} items-center justify-center`}
       >
         <Sparkles className="w-6 h-6" />
       </button>
 
       {/* Main Chat Interface Overlay */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 w-80 sm:w-96 h-[500px] max-h-[80vh] bg-dark-800/95 backdrop-blur-xl border border-dark-700/60 rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden">
+        <div className="fixed bottom-24 md:bottom-6 right-4 md:right-6 w-[calc(100vw-32px)] sm:w-96 h-[500px] max-h-[70vh] bg-dark-800/95 backdrop-blur-xl border border-dark-700/60 rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden">
           {/* Component Header */}
           <div className="p-4 border-b border-dark-700/50 bg-dark-900/50 flex items-center justify-between">
             <div className="flex items-center gap-2">

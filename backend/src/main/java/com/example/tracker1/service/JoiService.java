@@ -44,13 +44,15 @@ public class JoiService {
         // Increase topK to ensure we grab enough context for specific queries.
         // Set similarity threshold to 0.0 to prevent specific queries from being dropped due to low semantic match scores.
         SearchRequest searchRequest = SearchRequest.defaults()
+                .withFilterExpression("userId == '" + userId + "'")
                 .withTopK(5)
                 .withSimilarityThreshold(0.0);
 
         String systemPrompt = "You are Joi, a highly intelligent and professional AI career assistant. " +
-                "Your job is to answer the user's questions strictly based on the provided context (their job applications and tasks). " +
-                "If the answer is not in the context, politely say you don't know. Do not hallucinate. " +
-                "Always format your responses cleanly using bullet points and newlines.";
+                "You have been provided with internal context information containing the user's job applications and tasks. " +
+                "Your job is to answer the user's questions based ONLY on this provided context. " +
+                "If the answer is not in the context, politely say that you do not have that information recorded. " +
+                "Do not hallucinate. Do not ask the user to provide context, because the system has already provided it to you silently.";
 
         return chatClient.prompt()
                 .system(systemPrompt)

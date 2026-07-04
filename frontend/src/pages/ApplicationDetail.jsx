@@ -44,6 +44,17 @@ const CalendarIcon = () => (
   </svg>
 )
 
+const BellIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+    />
+  </svg>
+)
+
 const BriefcaseIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -130,6 +141,7 @@ function ApplicationDetail() {
   const [error, setError] = useState("")
   const [activeTab, setActiveTab] = useState("overview")
   const [isEditing, setIsEditing] = useState(false)
+  const [isRemindersOpen, setIsRemindersOpen] = useState(false)
   const [formData, setFormData] = useState(null)
   const [showInterviewModal, setShowInterviewModal] = useState(false)
   const [toast, setToast] = useState({ open: false, message: "", tone: "error" })
@@ -245,7 +257,6 @@ function ApplicationDetail() {
   const tabs = [
     { id: "overview", label: "Overview", icon: <BriefcaseIcon /> },
     { id: "interviews", label: "Interviews", icon: <CalendarIcon />, count: application.interviews?.length },
-    { id: "reminders", label: "Reminders", icon: <CalendarIcon /> },
     { id: "description", label: "Job Description", icon: <DocumentIcon /> },
     { id: "timeline", label: "Timeline", icon: <ClockIcon /> },
   ]
@@ -313,6 +324,14 @@ function ApplicationDetail() {
             </a>
           )}
           <button
+            onClick={() => setIsRemindersOpen(true)}
+            className="btn-secondary flex items-center justify-center gap-2"
+          >
+            <BellIcon />
+            <span className="hidden sm:inline">Reminders</span>
+            <span className="sm:hidden">Reminders</span>
+          </button>
+          <button
             onClick={() => online && setIsEditing(true)}
             disabled={!online}
             className="btn-secondary flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -370,9 +389,6 @@ function ApplicationDetail() {
             canAdd={online}
           />
         )}
-        {activeTab === "reminders" && (
-          <RemindersPanel applicationId={id} />
-        )}
         {activeTab === "description" && (
           <DescriptionTab
             description={application.jobDescription}
@@ -404,6 +420,13 @@ function ApplicationDetail() {
           submitting={interviewSubmitting}
         />
       )}
+      
+      {/* Reminders Drawer */}
+      <RemindersPanel 
+        applicationId={id} 
+        open={isRemindersOpen} 
+        onClose={() => setIsRemindersOpen(false)} 
+      />
     </div>
   )
 }

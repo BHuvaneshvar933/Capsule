@@ -6,6 +6,7 @@ import BottomNav from "./BottomNav"
 import MoreSheet from "./MoreSheet"
 import BackendWakeBanner from "../components/BackendWakeBanner"
 import { MobileChromeContext } from "./chrome"
+import JoiChat from "../components/JoiChat"
 
 export default function AppLayout({ children }) {
   const [moreOpen, setMoreOpen] = useState(false)
@@ -78,6 +79,7 @@ export default function AppLayout({ children }) {
 
         {!hideBottomNav ? <BottomNav items={navItems} /> : null}
         <MoreSheet open={moreOpen} onClose={() => setMoreOpen(false)} />
+        <JoiChat />
       </div>
     </MobileChromeContext.Provider>
   )

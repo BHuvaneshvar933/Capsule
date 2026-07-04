@@ -4,6 +4,7 @@ import Toast from "./Toast"
 import ConfirmDialog from "./ConfirmDialog"
 import { formatLocalDateTime, toInstantISOStringFromLocalInput, toLocalDatetimeInputValue } from "../utils/datetime"
 import { toUserMessage } from "../utils/errorMessage"
+import { getExistingSubscription, getNotificationPermission, pushSupported } from "../push/push"
 
 const BellIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -22,19 +23,26 @@ const TrashIcon = () => (
   </svg>
 )
 
+const XIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+  </svg>
+)
+
 function isSameId(a, b) {
   if (!a && !b) return true
   if (!a || !b) return false
   return String(a) === String(b)
 }
 
-export default function RemindersPanel({ applicationId, todoId }) {
+export default function RemindersPanel({ applicationId, todoId, open, onClose }) {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [toast, setToast] = useState({ open: false, message: "", tone: "error" })
   const [confirm, setConfirm] = useState({ open: false, id: null })
+  const [pushEnabled, setPushEnabled] = useState(true)
 
   const [form, setForm] = useState(() => ({
     title: todoId ? "To-do reminder" : "Follow up",
@@ -47,6 +55,21 @@ export default function RemindersPanel({ applicationId, todoId }) {
       ...f,
       remindAtLocal: f.remindAtLocal || toLocalDatetimeInputValue(new Date(Date.now() + 60 * 60 * 1000)),
     }))
+
+    // Check if push notifications are enabled
+    const checkPushStatus = async () => {
+      if (!pushSupported() || getNotificationPermission() !== "granted") {
+        setPushEnabled(false)
+        return
+      }
+      try {
+        const sub = await getExistingSubscription()
+        setPushEnabled(!!sub)
+      } catch (err) {
+        setPushEnabled(false)
+      }
+    }
+    checkPushStatus()
   }, [])
 
   const load = async () => {
@@ -113,32 +136,55 @@ export default function RemindersPanel({ applicationId, todoId }) {
     }
   }
 
+  // If it's closed, we can still render it but off-screen, or we could unmount.
+  // Rendering it allows the transition to work correctly when opening/closing.
+
   return (
-    <div className="space-y-6">
-      <Toast open={toast.open} message={toast.message} tone={toast.tone} onClose={() => setToast((t) => ({ ...t, open: false }))} />
-      <ConfirmDialog
-        open={confirm.open}
-        title="Delete reminder?"
-        message="This will permanently remove it."
-        confirmText="Delete"
-        cancelText="Cancel"
-        tone="danger"
-        onCancel={() => setConfirm({ open: false, id: null })}
-        onConfirm={doDelete}
+    <>
+      {/* Backdrop overlay */}
+      <div 
+        className={`fixed inset-0 bg-black/50 z-40 transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
+        onClick={onClose} 
       />
 
-      <div className="card">
-        <div className="flex items-center gap-2">
-          <div className="p-2 rounded-xl bg-primary-500/10 text-primary-200 border border-primary-500/20">
-            <BellIcon />
+      {/* Sliding Drawer */}
+      <div className={`fixed inset-y-0 right-0 w-full sm:w-[450px] bg-dark-900 border-l border-dark-700 p-6 z-50 overflow-y-auto transition-transform duration-300 ease-in-out ${open ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-primary-500/10 text-primary-200 border border-primary-500/20">
+              <BellIcon />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-white">Reminders</h2>
+              <p className="text-dark-400 text-sm">Create follow-ups and notifications</p>
+              {!pushEnabled && (
+                <div className="mt-2 text-warning-400 text-xs bg-warning-500/10 border border-warning-500/20 p-2 rounded-lg">
+                  ⚠️ Push notifications are disabled. You will not receive alerts on your device. You can enable them in your settings.
+                </div>
+              )}
+            </div>
           </div>
-          <div>
-            <h3 className="text-lg font-semibold text-white">Reminders</h3>
-            <p className="text-dark-400 text-sm">Create follow-ups and get phone notifications (if enabled).</p>
-          </div>
+          <button onClick={onClose} className="p-2 text-dark-400 hover:text-white hover:bg-dark-700 rounded-xl transition-all">
+            <XIcon />
+          </button>
         </div>
 
-        <form onSubmit={submit} className="mt-6 grid lg:grid-cols-3 gap-4">
+        <div className="space-y-8">
+          <Toast open={toast.open} message={toast.message} tone={toast.tone} onClose={() => setToast((t) => ({ ...t, open: false }))} />
+          <ConfirmDialog
+            open={confirm.open}
+            title="Delete reminder?"
+            message="This will permanently remove it."
+            confirmText="Delete"
+            cancelText="Cancel"
+            tone="danger"
+            onCancel={() => setConfirm({ open: false, id: null })}
+            onConfirm={doDelete}
+          />
+
+          <div>
+            <h3 className="text-white font-semibold mb-4">New Reminder</h3>
+            <form onSubmit={submit} className="grid lg:grid-cols-2 gap-4">
           <div className="lg:col-span-1">
             <label className="block text-sm text-dark-400 mb-2">Title *</label>
             <input
@@ -158,24 +204,15 @@ export default function RemindersPanel({ applicationId, todoId }) {
               required
             />
           </div>
-          <div className="lg:col-span-1 flex items-end">
-            <button type="submit" disabled={submitting} className="btn-primary w-full disabled:opacity-50">
-              {submitting ? "Creating..." : "Create reminder"}
-            </button>
+              <div className="lg:col-span-2 flex items-end">
+                <button type="submit" disabled={submitting} className="btn-primary w-full disabled:opacity-50">
+                  {submitting ? "Creating..." : "Create reminder"}
+                </button>
+              </div>
+            </form>
           </div>
-          <div className="lg:col-span-3">
-            <label className="block text-sm text-dark-400 mb-2">Message</label>
-            <input
-              value={form.message}
-              onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
-              className="input-field"
-              placeholder="Optional details"
-            />
-          </div>
-        </form>
-      </div>
-
-      <div className="card">
+          
+          <div className="border-t border-dark-700 pt-8">
         <div className="flex items-center justify-between gap-4">
           <div>
             <div className="text-white font-semibold">Upcoming</div>
@@ -217,6 +254,6 @@ export default function RemindersPanel({ applicationId, todoId }) {
           </div>
         )}
       </div>
-    </div>
+    </>
   )
 }

@@ -15,7 +15,7 @@ import java.io.File;
 @Configuration
 public class VectorStoreConfig {
 
-    public static final String VECTOR_STORE_FILE = "vector_store.json";
+    public static final String VECTOR_STORE_FILE = "data/vector_store.json";
 
     /**
      * Configures the SimpleVectorStore bean. Attempts to load existing vector data

@@ -3,6 +3,7 @@ package com.example.tracker1.service;
 import com.example.tracker1.config.JwtUtil;
 import com.example.tracker1.model.dto.*;
 import com.example.tracker1.model.entity.User;
+import com.example.tracker1.exception.BadRequestException;
 import com.example.tracker1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,7 +21,7 @@ public class AuthServiceImpl implements AuthService {
     public void register(RegisterRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("User already exists");
+            throw new BadRequestException("User already exists");
         }
 
         User user = User.builder()
@@ -36,10 +37,10 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse login(AuthRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+                .orElseThrow(() -> new BadRequestException("Invalid credentials"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new BadRequestException("Invalid credentials");
         }
 
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole());

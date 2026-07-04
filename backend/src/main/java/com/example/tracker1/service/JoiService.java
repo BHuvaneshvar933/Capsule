@@ -44,7 +44,6 @@ public class JoiService {
         // Increase topK to ensure we grab enough context for specific queries.
         // Set similarity threshold to 0.0 to prevent specific queries from being dropped due to low semantic match scores.
         SearchRequest searchRequest = SearchRequest.defaults()
-                .withFilterExpression("userId == '" + userId + "'")
                 .withTopK(5)
                 .withSimilarityThreshold(0.0);
 

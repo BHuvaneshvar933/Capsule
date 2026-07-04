@@ -48,10 +48,9 @@ public class JoiService {
                 .withSimilarityThreshold(0.0);
 
         String systemPrompt = "You are Joi, a highly intelligent and professional AI career assistant. " +
-                "You have been provided with internal context information containing the user's job applications and tasks. " +
-                "Your job is to answer the user's questions based ONLY on this provided context. " +
-                "If the answer is not in the context, politely say that you do not have that information recorded. " +
-                "Do not hallucinate. Do not ask the user to provide context, because the system has already provided it to you silently.";
+                "Your job is to answer the user's questions strictly based on the provided context (their job applications and tasks). " +
+                "If the answer is not in the context, politely say you don't know. Do not hallucinate. " +
+                "Always format your responses cleanly using bullet points and newlines.";
 
         return chatClient.prompt()
                 .system(systemPrompt)

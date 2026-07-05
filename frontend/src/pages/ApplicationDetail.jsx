@@ -132,6 +132,15 @@ function ApplicationDetail() {
       >
         <TrashIcon />
       </Button>
+      <Button
+        variant="secondary"
+        size="sm"
+        className="px-4 rounded-2xl"
+        onClick={() => setIsRemindersOpen(true)}
+        aria-label="Reminders"
+      >
+        <BellIcon />
+      </Button>
     </div>,
     [online]
   )

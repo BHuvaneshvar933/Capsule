@@ -8,6 +8,21 @@ export default function JoiChat() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const chatContainerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (chatContainerRef.current && !chatContainerRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -49,7 +64,7 @@ export default function JoiChat() {
 
       {/* Main Chat Interface Overlay */}
       {isOpen && (
-        <div className="fixed bottom-24 md:bottom-6 right-4 md:right-6 w-[calc(100vw-32px)] sm:w-96 h-[500px] max-h-[70vh] bg-dark-800/95 backdrop-blur-xl border border-dark-700/60 rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden">
+        <div ref={chatContainerRef} className="fixed bottom-24 md:bottom-6 right-4 md:right-6 w-[calc(100vw-32px)] sm:w-96 h-[500px] max-h-[70vh] bg-dark-800/95 backdrop-blur-xl border border-dark-700/60 rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden">
           {/* Component Header */}
           <div className="p-4 border-b border-dark-700/50 bg-dark-900/50 flex items-center justify-between">
             <div className="flex items-center gap-2">

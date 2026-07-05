@@ -8,6 +8,8 @@ import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
+import com.example.tracker1.model.entity.User;
+import com.example.tracker1.repository.UserRepository;
 
 /**
  * Service responsible for orchestrating interactions with the Joi AI assistant.
@@ -19,6 +21,7 @@ public class JoiService {
 
     private final ChatClient chatClient;
     private final VectorStore vectorStore;
+    private final UserRepository userRepository;
     private final ChatMemory chatMemory = new InMemoryChatMemory();
 
     /**
@@ -26,10 +29,12 @@ public class JoiService {
      *
      * @param chatClientBuilder the builder used to configure the ChatClient.
      * @param vectorStore       the vector store used for document retrieval (RAG).
+     * @param userRepository    the repository used to fetch user details.
      */
-    public JoiService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore) {
+    public JoiService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore, UserRepository userRepository) {
         this.chatClient = chatClientBuilder.build();
         this.vectorStore = vectorStore;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -47,10 +52,15 @@ public class JoiService {
                 .withTopK(5)
                 .withSimilarityThreshold(0.0);
 
+        String userName = userRepository.findById(userId)
+                .map(User::getName)
+                .orElse("the user");
+
         String systemPrompt = "You are Joi, a highly intelligent and professional AI career assistant. " +
+                "You are talking to a user named " + userName + ". " +
                 "Your job is to answer the user's questions strictly based on the provided context (their job applications and tasks). " +
                 "If the answer is not in the context, politely say you don't know. Do not hallucinate. " +
-                "Always format your responses cleanly using bullet points and newlines.";
+                "Format your responses cleanly. IMPORTANT: Do NOT use phrases like 'from the given context' or 'I will answer in bullet points'. Just answer naturally.";
 
         return chatClient.prompt()
                 .system(systemPrompt)

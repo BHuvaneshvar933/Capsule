@@ -41,4 +41,10 @@ public class AuthController {
         
         return response;
     }
+
+    @PostMapping("/google")
+    public AuthResponse googleLogin(@RequestBody GoogleAuthRequest request) {
+        AuthResponse response = authService.googleLogin(request);
+        return response;
+    }
 }

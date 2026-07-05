@@ -3,6 +3,8 @@ import { useNavigate, Link } from "react-router-dom"
 import api from "../api/axios"
 import { useOnlineStatus } from "../hooks/useOnlineStatus"
 import { toUserMessage } from "../utils/errorMessage"
+import { GoogleLogin } from '@react-oauth/google'
+import { setToken } from "../utils/auth"
 
 const LogoMark = ({ className = "w-10 h-10" }) => (
   <img
@@ -41,7 +43,7 @@ const LoadingSpinner = () => (
 function Register() {
   const navigate = useNavigate()
   const online = useOnlineStatus()
-  const [form, setForm] = useState({ email: "", password: "", confirmPassword: "" })
+  const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" })
   const [message, setMessage] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
@@ -49,6 +51,19 @@ function Register() {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
     if (error) setError("")
+  }
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setLoading(true)
+      const res = await api.post("/api/auth/google", { token: credentialResponse.credential })
+      setToken(res.data.token)
+      setMessage("Account created successfully! Redirecting...")
+      setTimeout(() => navigate("/dashboard"), 2000)
+    } catch (err) {
+      setError(toUserMessage(err, "Google registration failed. Please try again."))
+      setLoading(false)
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -74,6 +89,7 @@ function Register() {
 
     try {
       await api.post("/api/auth/register", {
+        name: form.name,
         email: form.email,
         password: form.password
       })
@@ -123,6 +139,23 @@ function Register() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-dark-300">
+                Full Name
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
+                  className="input-field pl-4"
+                  placeholder="John Doe"
+                  required
+                />
+              </div>
+            </div>
+
             <div className="space-y-2">
               <label className="block text-sm font-medium text-dark-300">
                 Email address
@@ -201,6 +234,24 @@ function Register() {
                 <span>Create account</span>
               )}
             </button>
+            
+            <div className="relative flex items-center py-2 mt-4">
+              <div className="flex-grow border-t border-dark-700"></div>
+              <span className="flex-shrink-0 mx-4 text-dark-500 text-sm">or</span>
+              <div className="flex-grow border-t border-dark-700"></div>
+            </div>
+
+            <div className="flex justify-center mt-4 w-full">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => {
+                  setError("Google sign-in failed. Please try again.")
+                }}
+                theme="filled_black"
+                shape="pill"
+                text="signup_with"
+              />
+            </div>
           </form>
 
           <div className="mt-8 text-center">

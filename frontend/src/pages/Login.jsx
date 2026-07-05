@@ -4,6 +4,7 @@ import api from "../api/axios"
 import { getToken, setToken } from "../utils/auth"
 import { useOnlineStatus } from "../hooks/useOnlineStatus"
 import { toUserMessage } from "../utils/errorMessage"
+import { GoogleLogin } from '@react-oauth/google'
 
 const LogoMark = ({ className = "w-10 h-10" }) => (
   <img
@@ -51,6 +52,19 @@ function Login() {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
     if (error) setError("")
+  }
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setLoading(true)
+      const res = await api.post("/api/auth/google", { token: credentialResponse.credential })
+      setToken(res.data.token)
+      const to = location.state?.from || "/dashboard"
+      navigate(to)
+    } catch (err) {
+      setError(toUserMessage(err, "Google sign-in failed. Please try again."))
+      setLoading(false)
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -167,6 +181,23 @@ function Login() {
                 <span>Sign in</span>
               )}
             </button>
+            
+            <div className="relative flex items-center py-2 mt-4">
+              <div className="flex-grow border-t border-dark-700"></div>
+              <span className="flex-shrink-0 mx-4 text-dark-500 text-sm">or</span>
+              <div className="flex-grow border-t border-dark-700"></div>
+            </div>
+
+            <div className="flex justify-center mt-4 w-full">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => {
+                  setError("Google sign-in failed. Please try again.")
+                }}
+                theme="filled_black"
+                shape="pill"
+              />
+            </div>
           </form>
 
           <div className="mt-8 text-center">

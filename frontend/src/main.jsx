@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 
 import { registerSW } from 'virtual:pwa-register'
 
@@ -25,6 +26,8 @@ if (!isExtensionNewTab()) {
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <GoogleOAuthProvider clientId="242936215617-hgcpav88686rqjgg1qo0k9c5p579e6dp.apps.googleusercontent.com">
+      <App />
+    </GoogleOAuthProvider>
   </StrictMode>,
 )

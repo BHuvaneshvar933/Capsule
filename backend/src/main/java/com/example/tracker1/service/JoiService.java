@@ -46,12 +46,18 @@ public class JoiService {
      * @return the generated response from the AI model.
      */
     public String chat(String message, String userId) {
-        // Increase topK to ensure we grab enough context for specific queries.
-        // Set similarity threshold to 0.0 to prevent specific queries from being dropped due to low semantic match scores.
-        SearchRequest searchRequest = SearchRequest.defaults()
-                .withTopK(5)
-                .withSimilarityThreshold(0.0)
-                .withFilterExpression("userId == '" + userId + "'");
+        // SimpleVectorStore does not support metadata filtering natively yet.
+        // We fetch a larger pool of documents and manually filter them by userId to ensure data isolation.
+        SearchRequest searchRequest = SearchRequest.query(message)
+                .withTopK(100)
+                .withSimilarityThreshold(0.0);
+        
+        java.util.List<org.springframework.ai.document.Document> rawDocs = vectorStore.similaritySearch(searchRequest);
+        String context = rawDocs.stream()
+                .filter(doc -> userId.equals(doc.getMetadata().get("userId")))
+                .limit(10)
+                .map(org.springframework.ai.document.Document::getContent)
+                .collect(java.util.stream.Collectors.joining("\n\n"));
 
         String userName = userRepository.findById(userId)
                 .map(User::getName)
@@ -61,15 +67,14 @@ public class JoiService {
                 "You are talking to a user named " + userName + ". " +
                 "Your job is to answer the user's questions strictly based on the provided context (their job applications and tasks). " +
                 "If the answer is not in the context, politely say you don't know. Do not hallucinate. " +
-                "Format your responses cleanly. IMPORTANT: Do NOT use phrases like 'from the given context' or 'I will answer in bullet points'. Just answer naturally.";
+                "Format your responses cleanly. IMPORTANT: Do NOT use phrases like 'from the given context' or 'I will answer in bullet points'. Just answer naturally.\n\n" +
+                "--- PROVIDED CONTEXT ---\n" +
+                (context.isBlank() ? "No context available." : context);
 
         return chatClient.prompt()
                 .system(systemPrompt)
                 .user(message)
-                .advisors(
-                        new MessageChatMemoryAdvisor(chatMemory, userId, 10),
-                        new QuestionAnswerAdvisor(vectorStore, searchRequest)
-                )
+                .advisors(new MessageChatMemoryAdvisor(chatMemory, userId, 10))
                 .call()
                 .content();
     }

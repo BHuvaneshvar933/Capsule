@@ -53,7 +53,7 @@ public class JoiService {
         // SimpleVectorStore does not support metadata filtering natively yet.
         // We fetch a larger pool of documents and manually filter them by userId to ensure data isolation.
         SearchRequest searchRequest = SearchRequest.query(message)
-                .withTopK(100)
+                .withTopK(10000)
                 .withSimilarityThreshold(0.0);
         
         java.util.List<org.springframework.ai.document.Document> rawDocs = vectorStore.similaritySearch(searchRequest);

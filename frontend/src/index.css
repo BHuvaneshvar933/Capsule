@@ -310,6 +310,7 @@ body {
 /* Custom react-datepicker overrides for neumorphic theme */
 .custom-calendar-theme {
   @apply bg-[#0a0a0a] border border-white/5 rounded-2xl shadow-neu-elevated text-textPrimary font-sans p-2 !important;
+  display: flex !important;
 }
 
 .custom-calendar-theme .react-datepicker__header {
@@ -347,12 +348,22 @@ body {
   @apply top-3 !important;
 }
 
+.custom-calendar-theme .react-datepicker__navigation--previous {
+  left: 8px !important;
+}
+
+.custom-calendar-theme .react-datepicker__navigation--next {
+  right: 8px !important;
+}
+
 .custom-calendar-theme .react-datepicker__navigation-icon::before {
   @apply border-textMuted hover:border-white transition-colors duration-200 !important;
 }
 
 .custom-calendar-theme .react-datepicker__time-container {
-  @apply border-l border-white/5 !important;
+  @apply border-r border-white/5 mr-2 !important;
+  border-left: none !important;
+  order: -1 !important;
 }
 
 .custom-calendar-theme .react-datepicker__time {

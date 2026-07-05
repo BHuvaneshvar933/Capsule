@@ -1,5 +1,8 @@
 package com.example.tracker1.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
@@ -18,6 +21,7 @@ import com.example.tracker1.repository.UserRepository;
  */
 @Service
 public class JoiService {
+    private static final Logger logger = LoggerFactory.getLogger(JoiService.class);
 
     private final ChatClient chatClient;
     private final VectorStore vectorStore;
@@ -53,11 +57,19 @@ public class JoiService {
                 .withSimilarityThreshold(0.0);
         
         java.util.List<org.springframework.ai.document.Document> rawDocs = vectorStore.similaritySearch(searchRequest);
+        logger.info("JoiService found {} raw docs in vector store for user '{}'", rawDocs.size(), userId);
+        
         String context = rawDocs.stream()
-                .filter(doc -> userId.equals(doc.getMetadata().get("userId")))
+                .filter(doc -> {
+                    boolean match = userId.equals(String.valueOf(doc.getMetadata().get("userId")));
+                    logger.info("Doc ID: {}, Meta userId: {}, Match: {}", doc.getId(), doc.getMetadata().get("userId"), match);
+                    return match;
+                })
                 .limit(10)
                 .map(org.springframework.ai.document.Document::getContent)
                 .collect(java.util.stream.Collectors.joining("\n\n"));
+        
+        logger.info("JoiService final context for user '{}' is empty? {}", userId, context.isBlank());
 
         String userName = userRepository.findById(userId)
                 .map(User::getName)

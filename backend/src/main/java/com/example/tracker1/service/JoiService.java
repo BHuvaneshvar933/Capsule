@@ -50,7 +50,8 @@ public class JoiService {
         // Set similarity threshold to 0.0 to prevent specific queries from being dropped due to low semantic match scores.
         SearchRequest searchRequest = SearchRequest.defaults()
                 .withTopK(5)
-                .withSimilarityThreshold(0.0);
+                .withSimilarityThreshold(0.0)
+                .withFilterExpression("userId == '" + userId + "'");
 
         String userName = userRepository.findById(userId)
                 .map(User::getName)

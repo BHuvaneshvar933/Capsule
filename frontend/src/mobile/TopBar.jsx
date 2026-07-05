@@ -5,7 +5,7 @@ import { ChevronLeft } from "lucide-react"
 const CAPSULE_CORP_LOGO_URL = `${import.meta.env.BASE_URL}capsule-corp.svg`
 
 function titleForPath(pathname) {
-  if (pathname === "/" || pathname.startsWith("/register")) return "Welcome"
+  if (pathname === "/" || pathname.startsWith("/register")) return ""
   if (pathname.startsWith("/applications/")) return "Application"
   if (pathname.startsWith("/job-tracker")) return "Job Tracker"
   if (pathname.startsWith("/todos")) return "To-dos"
@@ -46,7 +46,7 @@ export default function TopBar({ onOpenMenu, actions }) {
                 <button
                   type="button"
                   onClick={() => navigate(-1)}
-                    className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-2xl text-textSecondary hover:text-textPrimary hover:bg-surfaceAlt/60 transition-all duration-200 active:scale-[0.98]"
+                  className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-2xl text-textSecondary hover:text-textPrimary hover:bg-surfaceAlt/60 transition-all duration-200 active:scale-[0.98]"
                   aria-label="Back"
                 >
                   <ChevronLeft className="w-5 h-5" />

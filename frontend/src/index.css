@@ -307,15 +307,70 @@ body {
 .custom-calendar-theme .react-datepicker__time-list-item {
   @apply text-textSecondary hover:bg-surfaceAlt/60 hover:text-white transition-all duration-200 rounded-md mx-1 my-0.5 !important;
 }
+/* Custom react-datepicker overrides for neumorphic theme */
+.custom-calendar-theme {
+  @apply bg-[#0a0a0a] border border-white/5 rounded-2xl shadow-neu-elevated text-textPrimary font-sans p-2 !important;
+}
+
+.custom-calendar-theme .react-datepicker__header {
+  @apply bg-transparent border-b border-white/5 pb-2 !important;
+}
+
+.custom-calendar-theme .react-datepicker__current-month,
+.custom-calendar-theme .react-datepicker-time__header,
+.custom-calendar-theme .react-datepicker-year-header {
+  @apply text-white font-bold tracking-wide !important;
+}
+
+.custom-calendar-theme .react-datepicker__day-name {
+  @apply text-textMuted font-semibold text-xs uppercase tracking-wider w-8 m-1 !important;
+}
+
+.custom-calendar-theme .react-datepicker__day {
+  @apply text-textSecondary w-8 h-8 m-1 leading-8 rounded-lg transition-all duration-200 hover:bg-surfaceAlt/60 hover:text-white !important;
+}
+
+.custom-calendar-theme .react-datepicker__day--selected,
+.custom-calendar-theme .react-datepicker__day--keyboard-selected {
+  @apply bg-gradient-to-r from-primary-400 to-primary-600 text-black font-bold shadow-glow hover:text-black !important;
+}
+
+.custom-calendar-theme .react-datepicker__day--disabled {
+  @apply text-textMuted/30 hover:bg-transparent cursor-not-allowed !important;
+}
+
+.custom-calendar-theme .react-datepicker__day--outside-month {
+  @apply text-textMuted/50 !important;
+}
+
+.custom-calendar-theme .react-datepicker__navigation {
+  @apply top-3 !important;
+}
+
+.custom-calendar-theme .react-datepicker__navigation-icon::before {
+  @apply border-textMuted hover:border-white transition-colors duration-200 !important;
+}
+
+.custom-calendar-theme .react-datepicker__time-container {
+  @apply border-l border-white/5 !important;
+}
+
+.custom-calendar-theme .react-datepicker__time {
+  @apply bg-transparent !important;
+}
+
+.custom-calendar-theme .react-datepicker__time-list-item {
+  @apply text-textSecondary hover:bg-surfaceAlt/60 hover:text-white transition-all duration-200 rounded-md mx-1 my-0.5 !important;
+}
 
 .custom-calendar-theme .react-datepicker__time-list-item--selected {
   @apply bg-primary-500/20 text-primary-400 font-bold !important;
 }
 
 .react-datepicker-popper[data-placement^=bottom] .react-datepicker__triangle {
-  @apply fill-[#0a0a0a] color-[#0a0a0a] stroke-white/5 !important;
+  @apply fill-[#0a0a0a] text-[#0a0a0a] stroke-white/5 !important;
 }
 
 .react-datepicker-popper[data-placement^=top] .react-datepicker__triangle {
-  @apply fill-[#0a0a0a] color-[#0a0a0a] stroke-white/5 !important;
+  @apply fill-[#0a0a0a] text-[#0a0a0a] stroke-white/5 !important;
 }

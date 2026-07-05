@@ -13,8 +13,10 @@ import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 import com.example.tracker1.model.entity.Application;
 import com.example.tracker1.model.entity.User;
+import com.example.tracker1.model.entity.ResumeDocument;
 import com.example.tracker1.repository.ApplicationRepository;
 import com.example.tracker1.repository.UserRepository;
+import com.example.tracker1.repository.ResumeRepository;
 import org.springframework.data.domain.PageRequest;
 
 /**
@@ -30,6 +32,7 @@ public class JoiService {
     private final VectorStore vectorStore;
     private final UserRepository userRepository;
     private final ApplicationRepository applicationRepository;
+    private final ResumeRepository resumeRepository;
     private final ChatMemory chatMemory = new InMemoryChatMemory();
 
     /**
@@ -39,11 +42,12 @@ public class JoiService {
      * @param vectorStore       the vector store used for document retrieval (RAG).
      * @param userRepository    the repository used to fetch user details.
      */
-    public JoiService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore, UserRepository userRepository, ApplicationRepository applicationRepository) {
+    public JoiService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore, UserRepository userRepository, ApplicationRepository applicationRepository, ResumeRepository resumeRepository) {
         this.chatClient = chatClientBuilder.build();
         this.vectorStore = vectorStore;
         this.userRepository = userRepository;
         this.applicationRepository = applicationRepository;
+        this.resumeRepository = resumeRepository;
     }
 
     /**
@@ -89,20 +93,31 @@ public class JoiService {
                 })
                 .collect(java.util.stream.Collectors.joining("\n\n"));
 
-        String finalContext = "--- RECENT ACTIVE APPLICATIONS ---\n" + 
+        User user = userRepository.findById(userId).orElse(null);
+        String userName = user != null ? user.getName() : "the user";
+        String userEmail = user != null ? user.getEmail() : null;
+        
+        // Fetch the user's most recent resume
+        String resumeContext = "None";
+        if (userEmail != null) {
+            java.util.List<ResumeDocument> resumes = resumeRepository.findAllByUserEmailOrderByCreatedAtDesc(userEmail);
+            if (!resumes.isEmpty() && resumes.get(0).getExtractedText() != null) {
+                resumeContext = resumes.get(0).getExtractedText();
+            }
+        }
+
+        String finalContext = "--- USER'S LATEST RESUME (BACKGROUND & SKILLS) ---\n" + 
+                              resumeContext + 
+                              "\n\n--- RECENT ACTIVE APPLICATIONS ---\n" + 
                               (recentAppsContext.isBlank() ? "None" : recentAppsContext) + 
                               "\n\n--- ADDITIONAL RELEVANT DATA ---\n" + 
                               (context.isBlank() ? "None" : context);
 
         logger.info("JoiService final context for user '{}' is empty? {}", userId, finalContext.isBlank());
 
-        String userName = userRepository.findById(userId)
-                .map(User::getName)
-                .orElse("the user");
-
         String systemPrompt = "You are Joi, a highly intelligent and professional AI career assistant. " +
                 "You are talking to a user named " + userName + ". " +
-                "Your job is to answer the user's questions strictly based on the provided context (their job applications and tasks). " +
+                "Your job is to answer the user's questions strictly based on the provided context (their job applications, resumes, and tasks). " +
                 "If the answer is not in the context, politely say you don't know. Do not hallucinate. " +
                 "Format your responses cleanly. IMPORTANT: Do NOT use phrases like 'from the given context' or 'I will answer in bullet points'. Just answer naturally.\n\n" +
                 "--- PROVIDED CONTEXT ---\n" +

@@ -7,6 +7,8 @@ import { listApplications } from "../repo/applicationsRepo"
 import { getToken } from "../utils/auth"
 import Toast from "../components/Toast"
 import ConfirmDialog from "../components/ConfirmDialog"
+import RemindersPanel from "../components/RemindersPanel"
+import CustomDatePicker from "../components/CustomDatePicker"
 import { toUserMessage } from "../utils/errorMessage"
 import Button from "../mobile/ui/Button"
 import { useTopBarActions } from "../mobile/chrome"
@@ -377,20 +379,22 @@ function JobTracker() {
               </div>
               <div>
                 <label className="block text-sm text-dark-400 mb-2">From Date</label>
-                <input
-                  type="date"
+                <CustomDatePicker
+                  name="fromDate"
                   value={filters.fromDate}
                   onChange={(e) => setFilters({ ...filters, fromDate: e.target.value })}
                   className="input-field"
+                  placeholder="Select date"
                 />
               </div>
               <div>
                 <label className="block text-sm text-dark-400 mb-2">To Date</label>
-                <input
-                  type="date"
+                <CustomDatePicker
+                  name="toDate"
                   value={filters.toDate}
                   onChange={(e) => setFilters({ ...filters, toDate: e.target.value })}
                   className="input-field"
+                  placeholder="Select date"
                 />
               </div>
             </div>
@@ -677,12 +681,12 @@ function Modal({ formData, handleChange, handleSubmit, close, formErrors, submit
               <label className="block text-sm font-medium text-dark-300 mb-2">
                 Applied Date
               </label>
-              <input
-                type="date"
+              <CustomDatePicker
                 name="appliedDate"
                 value={formData.appliedDate}
                 onChange={handleChange}
                 className="input-field"
+                placeholder="Select date"
               />
             </div>
 

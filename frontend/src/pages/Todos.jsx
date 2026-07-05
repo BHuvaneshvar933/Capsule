@@ -5,6 +5,7 @@ import { useOnlineStatus } from "../hooks/useOnlineStatus"
 import Toast from "../components/Toast"
 import ConfirmDialog from "../components/ConfirmDialog"
 import RemindersPanel from "../components/RemindersPanel"
+import CustomDatePicker from "../components/CustomDatePicker"
 import { toUserMessage } from "../utils/errorMessage"
 import Button from "../mobile/ui/Button"
 import { useTopBarActions } from "../mobile/chrome"
@@ -538,11 +539,12 @@ export default function Todos() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-dark-300 mb-2">Due date</label>
-                  <input
-                    type="date"
+                  <CustomDatePicker
+                    name="dueDate"
                     value={form.dueDate}
                     onChange={(e) => setForm((f) => ({ ...f, dueDate: e.target.value }))}
                     className="input-field"
+                    placeholder="Select date"
                   />
                 </div>
                 <div>

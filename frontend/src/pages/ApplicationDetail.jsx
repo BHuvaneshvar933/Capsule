@@ -12,6 +12,7 @@ import { toUserMessage } from "../utils/errorMessage"
 import RemindersPanel from "../components/RemindersPanel"
 import Button from "../mobile/ui/Button"
 import { useTopBarActions } from "../mobile/chrome"
+import CustomDatePicker from "../components/CustomDatePicker"
 
 // Icons
 const ArrowLeftIcon = () => (
@@ -750,11 +751,12 @@ function EditModal({ formData, setFormData, onSubmit, onClose }) {
             </div>
             <div>
               <label className="block text-sm font-medium text-dark-300 mb-2">Applied Date</label>
-              <input
-                type="date"
+              <CustomDatePicker
+                name="appliedDate"
                 value={formData.appliedDate}
                 onChange={(e) => setFormData({ ...formData, appliedDate: e.target.value })}
                 className="input-field"
+                placeholder="Select date"
               />
             </div>
           </div>
@@ -847,8 +849,8 @@ function InterviewModal({ form, setForm, onSubmit, onClose, submitting }) {
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-dark-300 mb-2">Date *</label>
-              <input
-                type="date"
+              <CustomDatePicker
+                name="interviewDate"
                 value={form.interviewDate}
                 onChange={(e) => setForm({ ...form, interviewDate: e.target.value })}
                 className="input-field"

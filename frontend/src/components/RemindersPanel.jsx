@@ -5,6 +5,7 @@ import ConfirmDialog from "./ConfirmDialog"
 import { formatLocalDateTime, toInstantISOStringFromLocalInput, toLocalDatetimeInputValue } from "../utils/datetime"
 import { toUserMessage } from "../utils/errorMessage"
 import { getExistingSubscription, getNotificationPermission, pushSupported } from "../push/push"
+import CustomDatePicker from "./CustomDatePicker"
 
 const BellIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,11 +197,13 @@ export default function RemindersPanel({ applicationId, todoId, open, onClose })
           </div>
           <div className="lg:col-span-1">
             <label className="block text-sm text-dark-400 mb-2">Remind at *</label>
-            <input
-              type="datetime-local"
+            <CustomDatePicker
+              name="remindAtLocal"
+              showTime={true}
               value={form.remindAtLocal}
               onChange={(e) => setForm((f) => ({ ...f, remindAtLocal: e.target.value }))}
               className="input-field"
+              placeholder="Select date and time"
               required
             />
           </div>

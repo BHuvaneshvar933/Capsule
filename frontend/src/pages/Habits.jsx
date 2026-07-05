@@ -10,6 +10,7 @@ import {
   toggleHabitDoneForDay,
   updateHabit,
 } from "../db"
+import HabitIconPicker from "../components/HabitIconPicker"
 import Toast from "../components/Toast"
 import ConfirmDialog from "../components/ConfirmDialog"
 import Button from "../mobile/ui/Button"
@@ -445,12 +446,11 @@ export default function Habits() {
           <div className="rounded-2xl border border-dark-700 bg-dark-900/20 p-4 overflow-x-hidden">
             <div className="text-sm font-semibold text-white">Add a habit</div>
             <div className="mt-3 flex flex-col sm:flex-row gap-3 w-full min-w-0">
-              <input
-                value={newIcon}
-                onChange={(e) => setNewIcon(e.target.value)}
-                className="input-field w-full min-w-0 sm:w-24"
-                placeholder="Icon (e.g. \ud83d\udca7)"
-                aria-label="Habit icon"
+              <HabitIconPicker
+                icon={newIcon}
+                onIconChange={setNewIcon}
+                className="w-full sm:w-24 shrink-0"
+                placeholder="Icon"
               />
               <input
                 ref={newNameRef}
@@ -516,12 +516,10 @@ export default function Habits() {
                           {editing ? (
                             <div className="w-full min-w-0">
                               <div className="grid grid-cols-1 sm:grid-cols-[96px_minmax(0,1fr)] gap-2 w-full min-w-0">
-                                <input
-                                  value={editIcon}
-                                  onChange={(e) => setEditIcon(e.target.value)}
-                                  className="input-field w-full min-w-0"
+                                <HabitIconPicker
+                                  icon={editIcon}
+                                  onIconChange={setEditIcon}
                                   placeholder="Icon"
-                                  aria-label="Edit icon"
                                 />
                                 <input
                                   value={editName}

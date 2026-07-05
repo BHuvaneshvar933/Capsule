@@ -434,7 +434,7 @@ export default function Habits() {
         </div>
       </div>
 
-      <div className="card overflow-x-hidden">
+      <div className="card">
         <div className="flex items-center justify-between gap-4">
           <div>
             <h2 className="text-lg font-semibold text-white">Checklist</h2>
@@ -443,7 +443,7 @@ export default function Habits() {
         </div>
 
         <div className="mt-5 grid gap-3">
-          <div className="rounded-2xl border border-dark-700 bg-dark-900/20 p-4 overflow-x-hidden">
+          <div className="rounded-2xl border border-dark-700 bg-dark-900/20 p-4">
             <div className="text-sm font-semibold text-white">Add a habit</div>
             <div className="mt-3 flex flex-col sm:flex-row gap-3 w-full min-w-0">
               <HabitIconPicker
@@ -490,7 +490,7 @@ export default function Habits() {
               const streak = Number(streaks[h.id]) || 0
              return (
                  <div key={h.id} className="rounded-2xl border border-dark-700 bg-dark-800/35 p-4">
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 w-full min-w-0 overflow-hidden">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 w-full min-w-0">
                     <button
                       type="button"
                       onClick={() => onToggle(h.id)}

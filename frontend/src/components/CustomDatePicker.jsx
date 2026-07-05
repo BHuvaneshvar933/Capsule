@@ -28,7 +28,8 @@ const CustomDatePicker = ({
   className,
   placeholder,
   required,
-  disabled
+  disabled,
+  popperPlacement
 }) => {
   // Convert string value to Date object for react-datepicker
   const parseValueToDate = (val) => {
@@ -88,6 +89,7 @@ const CustomDatePicker = ({
         disabled={disabled}
         customInput={<CustomInput className={className} />}
         calendarClassName="custom-calendar-theme"
+        popperPlacement={popperPlacement}
       />
     </div>
   );

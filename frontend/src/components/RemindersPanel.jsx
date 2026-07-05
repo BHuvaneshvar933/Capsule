@@ -204,6 +204,7 @@ export default function RemindersPanel({ applicationId, todoId, open, onClose })
               onChange={(e) => setForm((f) => ({ ...f, remindAtLocal: e.target.value }))}
               className="input-field"
               placeholder="Select date and time"
+              popperPlacement="bottom-end"
               required
             />
           </div>

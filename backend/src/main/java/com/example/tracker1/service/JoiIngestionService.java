@@ -44,7 +44,8 @@ public class JoiIngestionService {
             String content = String.format("Job Application: Role: %s, Company: %s, Status: %s, Applied Date: %s",
                     app.getRole(), app.getCompany(), app.getStatus(), app.getAppliedDate());
             
-            return new Document(content, Map.of(
+            // Use app.getId() to prevent duplication on re-indexing
+            return new Document(app.getId(), content, Map.of(
                     "userId", userId,
                     "type", "APPLICATION",
                     "appId", app.getId()
@@ -74,6 +75,25 @@ public class JoiIngestionService {
         }
         
         // Save at the very end
+        vectorStore.save(new File(VectorStoreConfig.VECTOR_STORE_FILE));
+    }
+
+    public void indexApplication(Application app) {
+        String content = String.format("Job Application: Role: %s, Company: %s, Status: %s, Applied Date: %s",
+                app.getRole(), app.getCompany(), app.getStatus(), app.getAppliedDate());
+        
+        Document doc = new Document(app.getId(), content, Map.of(
+                "userId", app.getUserId(),
+                "type", "APPLICATION",
+                "appId", app.getId()
+        ));
+        
+        vectorStore.add(List.of(doc));
+        vectorStore.save(new File(VectorStoreConfig.VECTOR_STORE_FILE));
+    }
+
+    public void removeApplication(String appId) {
+        vectorStore.delete(List.of(appId));
         vectorStore.save(new File(VectorStoreConfig.VECTOR_STORE_FILE));
     }
 }

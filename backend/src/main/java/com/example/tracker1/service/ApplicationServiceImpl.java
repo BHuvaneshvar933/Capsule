@@ -33,6 +33,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     private final UserRepository userRepository;
     private final MongoTemplate mongoTemplate;
+    private final JoiIngestionService joiIngestionService;
 
     private String getCurrentUserEmail() {
         Object principal = SecurityContextHolder
@@ -92,6 +93,14 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .build();
 
         Application saved = repository.save(application);
+
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            try {
+                joiIngestionService.indexApplication(saved);
+            } catch (Exception e) {
+                System.err.println("Failed to index application for Joi: " + e.getMessage());
+            }
+        });
 
         return mapToResponse(saved);
     }
@@ -238,6 +247,14 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         Application saved = repository.save(application);
 
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            try {
+                joiIngestionService.indexApplication(saved);
+            } catch (Exception e) {
+                System.err.println("Failed to index application for Joi: " + e.getMessage());
+            }
+        });
+
         return mapToResponse(saved);
     }
 
@@ -274,6 +291,14 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         Application saved = repository.save(application);
 
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            try {
+                joiIngestionService.indexApplication(saved);
+            } catch (Exception e) {
+                System.err.println("Failed to index application for Joi: " + e.getMessage());
+            }
+        });
+
         return mapToResponse(saved);
     }
 
@@ -290,6 +315,14 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
 
         repository.delete(application);
+        
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            try {
+                joiIngestionService.removeApplication(id);
+            } catch (Exception e) {
+                System.err.println("Failed to remove application index for Joi: " + e.getMessage());
+            }
+        });
     }
 
     @Override

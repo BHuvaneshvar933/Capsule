@@ -71,18 +71,32 @@ public class AuthServiceImpl implements AuthService {
                 GoogleIdToken.Payload payload = idToken.getPayload();
                 String email = payload.getEmail();
                 String name = (String) payload.get("name");
+                if (name == null || name.trim().isEmpty()) {
+                    name = (String) payload.get("given_name");
+                }
+                if (name == null || name.trim().isEmpty()) {
+                    name = email.split("@")[0];
+                }
+                
+                final String finalName = name;
 
                 User user = userRepository.findByEmail(email).orElseGet(() -> {
                     // Create new user if not exists
                     User newUser = User.builder()
                             .email(email)
-                            .name(name)
+                            .name(finalName) // Use the extracted or fallback name
                             // Set a random password since they authenticate via Google
                             .password(passwordEncoder.encode(UUID.randomUUID().toString()))
                             .role("ROLE_USER")
                             .build();
                     return userRepository.save(newUser);
                 });
+
+                // If the user already existed but their name was somehow null, update it now
+                if (user.getName() == null || user.getName().trim().isEmpty()) {
+                    user.setName(finalName);
+                    user = userRepository.save(user);
+                }
 
                 String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
 

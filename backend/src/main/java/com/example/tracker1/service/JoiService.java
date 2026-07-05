@@ -94,7 +94,9 @@ public class JoiService {
                 .collect(java.util.stream.Collectors.joining("\n\n"));
 
         User user = userRepository.findById(userId).orElse(null);
-        String userName = user != null ? user.getName() : "the user";
+        String userName = (user != null && user.getName() != null && !user.getName().trim().isEmpty()) 
+                            ? user.getName() 
+                            : "there";
         String userEmail = user != null ? user.getEmail() : null;
         
         // Fetch the user's most recent resume

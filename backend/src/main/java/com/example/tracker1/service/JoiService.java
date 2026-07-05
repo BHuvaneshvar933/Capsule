@@ -11,8 +11,11 @@ import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
+import com.example.tracker1.model.entity.Application;
 import com.example.tracker1.model.entity.User;
+import com.example.tracker1.repository.ApplicationRepository;
 import com.example.tracker1.repository.UserRepository;
+import org.springframework.data.domain.PageRequest;
 
 /**
  * Service responsible for orchestrating interactions with the Joi AI assistant.
@@ -26,6 +29,7 @@ public class JoiService {
     private final ChatClient chatClient;
     private final VectorStore vectorStore;
     private final UserRepository userRepository;
+    private final ApplicationRepository applicationRepository;
     private final ChatMemory chatMemory = new InMemoryChatMemory();
 
     /**
@@ -35,10 +39,11 @@ public class JoiService {
      * @param vectorStore       the vector store used for document retrieval (RAG).
      * @param userRepository    the repository used to fetch user details.
      */
-    public JoiService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore, UserRepository userRepository) {
+    public JoiService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore, UserRepository userRepository, ApplicationRepository applicationRepository) {
         this.chatClient = chatClientBuilder.build();
         this.vectorStore = vectorStore;
         this.userRepository = userRepository;
+        this.applicationRepository = applicationRepository;
     }
 
     /**
@@ -69,7 +74,27 @@ public class JoiService {
                 .map(org.springframework.ai.document.Document::getContent)
                 .collect(java.util.stream.Collectors.joining("\n\n"));
         
-        logger.info("JoiService final context for user '{}' is empty? {}", userId, context.isBlank());
+        // HYBRID INJECTION: To prevent the "I had to specifically ask for it" issue, we always inject the user's 
+        // most recent 10 applications directly from MongoDB. This guarantees Joi is always "aware" of their current active work,
+        // even if their message (e.g. "hello") has zero semantic similarity to the application.
+        java.util.List<Application> recentApps = applicationRepository.findByUserId(userId, PageRequest.of(0, 10)).getContent();
+        String recentAppsContext = recentApps.stream()
+                .map(app -> {
+                    String skills = app.getExtractedSkills() != null ? String.join(", ", app.getExtractedSkills()) : "None";
+                    String desc = app.getJobDescription() != null ? app.getJobDescription() : "None";
+                    return String.format("Job Application:\n- Role: %s\n- Company: %s\n- Status: %s\n- Date: %s\n- Location: %s\n- Salary: %s %s-%s\n- Skills: %s\n- Description: %s", 
+                            app.getRole(), app.getCompany(), app.getStatus(), app.getAppliedDate(),
+                            app.getLocation(), app.getCurrency(), app.getSalaryMin(), app.getSalaryMax(),
+                            skills, desc);
+                })
+                .collect(java.util.stream.Collectors.joining("\n\n"));
+
+        String finalContext = "--- RECENT ACTIVE APPLICATIONS ---\n" + 
+                              (recentAppsContext.isBlank() ? "None" : recentAppsContext) + 
+                              "\n\n--- ADDITIONAL RELEVANT DATA ---\n" + 
+                              (context.isBlank() ? "None" : context);
+
+        logger.info("JoiService final context for user '{}' is empty? {}", userId, finalContext.isBlank());
 
         String userName = userRepository.findById(userId)
                 .map(User::getName)
@@ -81,7 +106,7 @@ public class JoiService {
                 "If the answer is not in the context, politely say you don't know. Do not hallucinate. " +
                 "Format your responses cleanly. IMPORTANT: Do NOT use phrases like 'from the given context' or 'I will answer in bullet points'. Just answer naturally.\n\n" +
                 "--- PROVIDED CONTEXT ---\n" +
-                (context.isBlank() ? "No context available." : context);
+                finalContext;
 
         return chatClient.prompt()
                 .system(systemPrompt)

@@ -41,8 +41,12 @@ public class JoiIngestionService {
         List<Application> applications = applicationRepository.findByUserId(userId);
         
         List<Document> documents = applications.stream().map(app -> {
-            String content = String.format("Job Application: Role: %s, Company: %s, Status: %s, Applied Date: %s",
-                    app.getRole(), app.getCompany(), app.getStatus(), app.getAppliedDate());
+            String skills = app.getExtractedSkills() != null ? String.join(", ", app.getExtractedSkills()) : "None";
+            String desc = app.getJobDescription() != null ? app.getJobDescription() : "None";
+            String content = String.format("Job Application:\n- Role: %s\n- Company: %s\n- Status: %s\n- Date: %s\n- Location: %s\n- Salary: %s %s-%s\n- Skills: %s\n- Description: %s",
+                    app.getRole(), app.getCompany(), app.getStatus(), app.getAppliedDate(),
+                    app.getLocation(), app.getCurrency(), app.getSalaryMin(), app.getSalaryMax(),
+                    skills, desc);
             
             // Use app.getId() to prevent duplication on re-indexing
             return new Document(app.getId(), content, Map.of(
@@ -79,8 +83,12 @@ public class JoiIngestionService {
     }
 
     public void indexApplication(Application app) {
-        String content = String.format("Job Application: Role: %s, Company: %s, Status: %s, Applied Date: %s",
-                app.getRole(), app.getCompany(), app.getStatus(), app.getAppliedDate());
+        String skills = app.getExtractedSkills() != null ? String.join(", ", app.getExtractedSkills()) : "None";
+        String desc = app.getJobDescription() != null ? app.getJobDescription() : "None";
+        String content = String.format("Job Application:\n- Role: %s\n- Company: %s\n- Status: %s\n- Date: %s\n- Location: %s\n- Salary: %s %s-%s\n- Skills: %s\n- Description: %s",
+                app.getRole(), app.getCompany(), app.getStatus(), app.getAppliedDate(),
+                app.getLocation(), app.getCurrency(), app.getSalaryMin(), app.getSalaryMax(),
+                skills, desc);
         
         Document doc = new Document(app.getId(), content, Map.of(
                 "userId", app.getUserId(),

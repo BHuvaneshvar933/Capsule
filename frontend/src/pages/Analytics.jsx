@@ -6,6 +6,7 @@ import { toUserMessage } from "../utils/errorMessage"
 import Button from "../mobile/ui/Button"
 import { useTopBarActions } from "../mobile/chrome"
 import { listApplications } from "../repo/applicationsRepo"
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts"
 
 const LoadingSpinner = () => (
   <svg className="animate-spin h-8 w-8" fill="none" viewBox="0 0 24 24">
@@ -233,6 +234,28 @@ function Analytics() {
       if ((dowCounts[i] || 0) > (dowCounts[mostActive] || 0)) mostActive = i
     }
 
+    const last30Days = []
+    const chartEnd = new Date()
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date()
+      d.setDate(chartEnd.getDate() - i)
+      last30Days.push({
+        dateKey: d.toISOString().split('T')[0],
+        display: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+        count: 0
+      })
+    }
+    
+    for (const app of apps) {
+      if (app.appliedDate) {
+        const key = app.appliedDate.split('T')[0]
+        const dayMatch = last30Days.find(d => d.dateKey === key)
+        if (dayMatch) {
+          dayMatch.count++
+        }
+      }
+    }
+
     const daysSinceLast = lastAppliedAt ? daysBetween(lastAppliedAt, today) : null
 
     const roleBest = Array.from(byRole.entries())
@@ -319,6 +342,10 @@ function Analytics() {
       statusTotal,
       suggestions: suggestions.slice(0, 3),
       sampleNote,
+      roleBest,
+      weekdayRate,
+      weekendRate,
+      chartData: last30Days,
     }
   }, [overall, weekCompare, appsInfo])
 
@@ -399,6 +426,44 @@ function Analytics() {
               suffix="vs last week"
               unit="%"
             />
+          </div>
+          
+          <div className="mt-8">
+            <h2 className="text-sm font-semibold text-white mb-4">Last 30 Days</h2>
+            <div className="h-48 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={derived.chartData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                  <XAxis 
+                    dataKey="display" 
+                    stroke="#888888" 
+                    fontSize={11} 
+                    tickLine={false} 
+                    axisLine={false}
+                    minTickGap={20}
+                  />
+                  <YAxis 
+                    stroke="#888888" 
+                    fontSize={11} 
+                    tickLine={false} 
+                    axisLine={false} 
+                    tickFormatter={(val) => Math.floor(val) === val ? val : ''}
+                    width={30}
+                  />
+                  <RechartsTooltip 
+                    contentStyle={{ backgroundColor: '#0a0a0a', borderColor: '#ffffff10', borderRadius: '12px', color: '#fff' }}
+                    itemStyle={{ color: '#3b82f6' }}
+                  />
+                  <Area type="monotone" dataKey="count" name="Applications" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#colorCount)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </section>
 

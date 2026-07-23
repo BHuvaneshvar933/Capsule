@@ -41,6 +41,8 @@ function Login() {
   const [form, setForm] = useState({ email: "", password: "" })
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  
+  const isExtension = typeof window !== "undefined" && window.location.protocol === "chrome-extension:"
 
   useEffect(() => {
     const token = getToken()
@@ -188,15 +190,23 @@ function Login() {
               <div className="flex-grow border-t border-dark-700"></div>
             </div>
 
-            <div className="flex justify-center mt-4 w-full">
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => {
-                  setError("Google sign-in failed. Please try again.")
-                }}
-                theme="filled_black"
-                shape="pill"
-              />
+            <div className="flex flex-col items-center mt-4 w-full">
+              {isExtension ? (
+                <div className="text-center p-3 border border-warning-500/30 bg-warning-500/10 rounded-xl">
+                  <p className="text-warning-300 text-xs">
+                    Google Sign-in is only available on the web version. Please use your email and password here.
+                  </p>
+                </div>
+              ) : (
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => {
+                    setError("Google sign-in failed. Please try again.")
+                  }}
+                  theme="filled_black"
+                  shape="pill"
+                />
+              )}
             </div>
           </form>
 

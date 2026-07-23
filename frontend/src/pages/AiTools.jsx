@@ -7,6 +7,7 @@ import { useTopBarActions } from "../mobile/chrome"
 import {
   analyzeResume,
   generateQuestions,
+  generateCoverLetter,
   listResumes,
   uploadResume,
 } from "../api/ai"
@@ -32,6 +33,12 @@ const LibraryIcon = () => (
 const QuestionIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h10a2 2 0 012 2v14a2 2 0 01-2 2z" />
+  </svg>
+)
+
+const DocumentTextIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
   </svg>
 )
 
@@ -121,6 +128,9 @@ export default function AiTools() {
           <TabButton active={tab === "matcher"} onClick={() => setTab("matcher")} icon={<SparkIcon />}>
             Resume Matcher
           </TabButton>
+          <TabButton active={tab === "coverLetter"} onClick={() => setTab("coverLetter")} icon={<DocumentTextIcon />}>
+            Cover Letter
+          </TabButton>
           <TabButton active={tab === "questions"} onClick={() => setTab("questions")} icon={<QuestionIcon />}>
             Questions
           </TabButton>
@@ -132,6 +142,16 @@ export default function AiTools() {
 
       {tab === "matcher" && (
         <ResumeMatcher online={online} onSavedResume={refreshResumes} />
+      )}
+
+      {tab === "coverLetter" && (
+        <CoverLetterGenerator
+          online={online}
+          resumesLoading={resumesLoading}
+          resumesError={resumesError}
+          resumes={resumes}
+          onRefreshResumes={refreshResumes}
+        />
       )}
 
       {tab === "questions" && (
@@ -754,3 +774,157 @@ function EmptyPanel({ text }) {
     </div>
   )
 }
+
+function CoverLetterGenerator({ online, resumesLoading, resumesError, resumes, onRefreshResumes }) {
+  const [selectedResumeId, setSelectedResumeId] = useState("")
+  const [companyName, setCompanyName] = useState("")
+  const [jobDescription, setJobDescription] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [result, setResult] = useState(null)
+  const [copied, setCopied] = useState(false)
+
+  const run = async () => {
+    if (!selectedResumeId) {
+      setError("Please select a resume from the library")
+      return
+    }
+    if (!jobDescription.trim()) {
+      setError("Please paste a job description")
+      return
+    }
+
+    try {
+      setLoading(true)
+      setError("")
+      setResult(null)
+      setCopied(false)
+      const res = await generateCoverLetter(selectedResumeId, jobDescription.trim(), companyName.trim())
+      setResult(res.data)
+    } catch (e) {
+      setError(toUserMessage(e, "Cover letter generation failed"))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleCopy = () => {
+    if (!result?.coverLetter) return
+    navigator.clipboard.writeText(result.coverLetter)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <div className="grid lg:grid-cols-2 gap-6">
+      <div className="card space-y-5">
+        <div>
+          <h2 className="text-lg font-semibold text-white">Cover Letter Generator</h2>
+          <p className="text-sm text-dark-400 mt-1">Select a resume and paste a job description to get a highly customized cover letter.</p>
+        </div>
+
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-dark-300">Target Company (Optional)</label>
+            <input
+              type="text"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              placeholder="e.g. Acme Corp"
+              disabled={!online || loading}
+              className="input w-full bg-dark-800/50 focus:bg-dark-800"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-medium text-dark-300">Select Resume</label>
+              <button type="button" onClick={onRefreshResumes} className="text-xs text-primary-400 hover:text-primary-300">
+                Refresh
+              </button>
+            </div>
+            
+            {resumesLoading ? (
+              <div className="text-sm text-dark-400 py-2">Loading resumes...</div>
+            ) : resumesError ? (
+              <div className="text-sm text-danger-400 py-2">{resumesError}</div>
+            ) : resumes.length === 0 ? (
+              <div className="text-sm text-dark-400 py-2">
+                No resumes found. Go to the Resume Library tab to upload one.
+              </div>
+            ) : (
+              <select
+                value={selectedResumeId}
+                onChange={(e) => setSelectedResumeId(e.target.value)}
+                disabled={!online || loading}
+                className="input w-full bg-dark-800/50"
+              >
+                <option value="" disabled>-- Select a resume --</option>
+                {resumes.map(r => (
+                  <option key={r.resumeId} value={r.resumeId}>
+                    {r.fileName || "(unnamed)"} - {new Date(r.createdAt).toLocaleDateString()}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-dark-300">Job Description</label>
+            <textarea
+              value={jobDescription}
+              onChange={(e) => setJobDescription(e.target.value)}
+              placeholder="Paste the full job description here..."
+              rows={8}
+              disabled={!online || loading}
+              className="input w-full resize-none bg-dark-800/50 focus:bg-dark-800"
+            />
+          </div>
+        </div>
+
+        {error && (
+          <div className="p-4 bg-danger-500/10 border border-danger-500/30 rounded-xl">
+            <p className="text-danger-400 text-sm">{error}</p>
+          </div>
+        )}
+
+        <button
+          onClick={run}
+          disabled={!online || loading}
+          className="btn-primary w-full sm:w-auto flex items-center justify-center gap-2"
+        >
+          {loading ? <LoadingSpinner /> : <SparkIcon />}
+          {loading ? "Generating..." : "Generate Cover Letter"}
+        </button>
+      </div>
+
+      <div className="card flex flex-col min-h-[500px]">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-white">Generated Letter</h2>
+          {result?.coverLetter && (
+            <button
+              onClick={handleCopy}
+              className="btn-secondary text-sm flex items-center gap-2"
+            >
+              {copied ? "Copied!" : "Copy to Clipboard"}
+            </button>
+          )}
+        </div>
+
+        {loading ? (
+          <div className="flex-1 flex flex-col items-center justify-center text-dark-400 gap-3">
+            <LoadingSpinner />
+            <p>Writing your cover letter...</p>
+          </div>
+        ) : result?.coverLetter ? (
+          <div className="flex-1 bg-dark-800/40 p-4 rounded-xl border border-dark-700 whitespace-pre-wrap text-dark-200 text-sm overflow-y-auto">
+            {result.coverLetter}
+          </div>
+        ) : (
+          <EmptyPanel text="Your cover letter will appear here." />
+        )}
+      </div>
+    </div>
+  )
+}
+

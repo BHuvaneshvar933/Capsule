@@ -8,7 +8,17 @@
     "http://127.0.0.1:*/*",
     "https://*/*"
   ],
+  "permissions": [
+    "contextMenus",
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "chrome_url_overrides": {
     "newtab": "dist/index.html"
   }
 }
+

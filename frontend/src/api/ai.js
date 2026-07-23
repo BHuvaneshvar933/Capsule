@@ -34,6 +34,11 @@ export function analyzeResume(resumeFile, jobDescription) {
   return timed("analyzeResume", () => api.post("/api/analyze-resume", form))
 }
 
+export function generateCoverLetter(resumeId, jobDescription, companyName) {
+  return timed("generateCoverLetter", () => api.post("/api/generate-cover-letter", { resumeId, jobDescription, companyName }))
+}
+
+
 export function generateQuestions({ company, role, resumeId, difficulty }) {
   return timed("generateQuestions", () =>
     api.post("/api/generate-questions", {

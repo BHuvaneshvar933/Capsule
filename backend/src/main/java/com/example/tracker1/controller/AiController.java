@@ -120,6 +120,21 @@ public class AiController {
                 .build();
     }
 
+    @PostMapping("/generate-cover-letter")
+    public GenerateCoverLetterResponse generateCoverLetter(@Valid @RequestBody GenerateCoverLetterRequest request) {
+        ResumeDocument resume = resumeService.getResumeOrThrow(request.getResumeId());
+
+        long t0 = System.nanoTime();
+        String coverLetter = resumeAiService.generateCoverLetter(resume.getExtractedText(), request.getJobDescription(), request.getCompanyName());
+        long durationMs = Math.max(0, (System.nanoTime() - t0) / 1_000_000);
+        // metricsService.recordAiCoverLetter(durationMs); // Optional if metric tracking is added
+
+        return GenerateCoverLetterResponse.builder()
+                .coverLetter(coverLetter)
+                .aiDurationMs(durationMs)
+                .build();
+    }
+
     @GetMapping("/questions/{questionSetId}")
     public QuestionSetResponse getQuestionSet(@PathVariable String questionSetId) {
         String userEmail = SecurityUtil.getCurrentUserEmail();

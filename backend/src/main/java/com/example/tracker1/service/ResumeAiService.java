@@ -82,4 +82,29 @@ public class ResumeAiService {
                 .call()
                 .entity(new ParameterizedTypeReference<GenerateQuestionsResponse>() {});
     }
+
+    public String generateCoverLetter(String resumeText, String jobDescription, String companyName) {
+        String resume = truncate(resumeText, 8000);
+        String jd = truncate(jobDescription, 8000);
+
+        String systemPrompt = "You are an expert career coach and professional cover letter writer.\n" +
+                "Write a highly tailored, compelling, and professional cover letter.\n" +
+                "Rules:\n" +
+                "- Output ONLY plain text.\n" +
+                "- DO NOT use markdown formatting (no bolding, no asterisks, no headers).\n" +
+                "- Keep it concise (around 3-4 paragraphs max).\n" +
+                "- Tone should be confident, professional, and enthusiastic.\n" +
+                "- Focus on matching the candidate's skills from the resume to the job description.";
+
+        String userPrompt = "Write a plain text cover letter for the following job at " + 
+                (companyName != null && !companyName.isBlank() ? companyName : "this company") + ".\n\n" +
+                "JOB DESCRIPTION:\n" + jd + "\n\n" +
+                "CANDIDATE RESUME:\n" + resume;
+
+        return chatClient.prompt()
+                .system(systemPrompt)
+                .user(userPrompt)
+                .call()
+                .content();
+    }
 }

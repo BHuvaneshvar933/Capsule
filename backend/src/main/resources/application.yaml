@@ -21,6 +21,7 @@ spring:
           host: ${CHROMA_HOST:http://chroma}
           port: ${CHROMA_PORT:8000}
         collection-name: jobtracker_vectors
+        initialize-schema: true
   servlet:
     multipart:
       max-file-size: 10MB

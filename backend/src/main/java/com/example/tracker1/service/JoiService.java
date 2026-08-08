@@ -59,22 +59,15 @@ public class JoiService {
      * @return the generated response from the AI model.
      */
     public String chat(String message, String userId) {
-        // SimpleVectorStore does not support metadata filtering natively yet.
-        // We fetch a larger pool of documents and manually filter them by userId to ensure data isolation.
         SearchRequest searchRequest = SearchRequest.query(message)
-                .withTopK(10000)
+                .withFilterExpression("userId == '" + userId + "'")
+                .withTopK(4)
                 .withSimilarityThreshold(0.0);
         
-        java.util.List<org.springframework.ai.document.Document> rawDocs = vectorStore.similaritySearch(searchRequest);
-        logger.info("JoiService found {} raw docs in vector store for user '{}'", rawDocs.size(), userId);
+        java.util.List<org.springframework.ai.document.Document> docs = vectorStore.similaritySearch(searchRequest);
+        logger.info("JoiService found {} docs in ChromaDB for user '{}'", docs.size(), userId);
         
-        String context = rawDocs.stream()
-                .filter(doc -> {
-                    boolean match = userId.equals(String.valueOf(doc.getMetadata().get("userId")));
-                    logger.info("Doc ID: {}, Meta userId: {}, Match: {}", doc.getId(), doc.getMetadata().get("userId"), match);
-                    return match;
-                })
-                .limit(4)
+        String context = docs.stream()
                 .map(org.springframework.ai.document.Document::getContent)
                 .collect(java.util.stream.Collectors.joining("\n\n"));
         

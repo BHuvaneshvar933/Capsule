@@ -2,10 +2,9 @@ package com.example.tracker1.service;
 
 import com.example.tracker1.model.entity.Application;
 import com.example.tracker1.repository.ApplicationRepository;
-import com.example.tracker1.config.VectorStoreConfig;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.document.Document;
-import org.springframework.ai.vectorstore.SimpleVectorStore;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -20,11 +19,11 @@ import java.util.stream.Collectors;
 @Service
 public class JoiIngestionService {
 
-    private final SimpleVectorStore vectorStore;
+    private final VectorStore vectorStore;
     private final ApplicationRepository applicationRepository;
     private final com.example.tracker1.repository.ResumeRepository resumeRepository;
 
-    public JoiIngestionService(SimpleVectorStore vectorStore, ApplicationRepository applicationRepository, com.example.tracker1.repository.ResumeRepository resumeRepository) {
+    public JoiIngestionService(VectorStore vectorStore, ApplicationRepository applicationRepository, com.example.tracker1.repository.ResumeRepository resumeRepository) {
         this.vectorStore = vectorStore;
         this.applicationRepository = applicationRepository;
         this.resumeRepository = resumeRepository;
@@ -77,9 +76,6 @@ public class JoiIngestionService {
                 vectorStore.add(splitDocs);
             }
         }
-        
-        // Save at the very end
-        vectorStore.save(new File(VectorStoreConfig.VECTOR_STORE_FILE));
     }
 
     public void indexApplication(Application app) {
@@ -97,11 +93,9 @@ public class JoiIngestionService {
         ));
         
         vectorStore.add(List.of(doc));
-        vectorStore.save(new File(VectorStoreConfig.VECTOR_STORE_FILE));
     }
 
     public void removeApplication(String appId) {
         vectorStore.delete(List.of(appId));
-        vectorStore.save(new File(VectorStoreConfig.VECTOR_STORE_FILE));
     }
 }

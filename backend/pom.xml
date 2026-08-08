@@ -127,6 +127,12 @@
 			<groupId>org.springframework.ai</groupId>
 			<artifactId>spring-ai-transformers-spring-boot-starter</artifactId>
 		</dependency>
+
+		<!-- Chroma Vector Store -->
+		<dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-chroma-store-spring-boot-starter</artifactId>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>

@@ -22,6 +22,14 @@ services:
       - onnx_cache:/tmp/spring-ai-onnx-generative
     restart: always
 
+  chroma:
+    image: chromadb/chroma:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    restart: always
+
   frontend:
     build:
       context: ./frontend
@@ -35,5 +43,6 @@ services:
 
 volumes:
   vector_data:
+  chroma_data:
   model_cache:
   onnx_cache:

@@ -69,7 +69,7 @@ body {
 @layer components {
   /* Glass morphism card */
   .glass-card {
-    @apply bg-surface/65 backdrop-blur-xl border-y border-white/5 sm:border border-white/5 rounded-none sm:rounded-2xl shadow-neu-flat;
+    @apply bg-surface/65 backdrop-blur-xl border border-white/5 rounded-2xl shadow-neu-flat;
   }
 
   /* Gradient text */
@@ -138,9 +138,8 @@ body {
     background-position: right 1rem center;
   }
 
-  /* Card component - Neumorphic Elevated */
   .card {
-    @apply bg-surface border-y border-white/[0.02] sm:border border-white/[0.02] rounded-none sm:rounded-2xl p-5 sm:p-6 transition-all duration-300
+    @apply bg-surface border border-white/[0.02] rounded-2xl p-5 sm:p-6 transition-all duration-300
            shadow-neu-flat hover:shadow-neu-elevated;
   }
 
@@ -156,9 +155,8 @@ body {
     }
   }
 
-  /* Stat card */
   .stat-card {
-    @apply bg-[#0c0c0c] border-y sm:border border-white/[0.02] rounded-none sm:rounded-2xl p-5 sm:p-6
+    @apply bg-[#0c0c0c] border border-white/[0.02] rounded-2xl p-5 sm:p-6
            shadow-neu-flat hover:shadow-neu-elevated transition-all duration-300;
   }
 

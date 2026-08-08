@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { Home, BriefcaseBusiness, CheckSquare, Timer, CheckCircle2, Bookmark, BarChart3, Sparkles, Settings } from "lucide-react"
-import { useLocation } from "react-router-dom"
+import { useLocation, NavLink } from "react-router-dom"
 import TopBar from "./TopBar"
 import BottomNav from "./BottomNav"
 import MoreSheet from "./MoreSheet"
@@ -89,7 +89,7 @@ export default function AppLayout({ children }) {
   return (
     <MobileChromeContext.Provider value={chromeValue}>
       <div className="min-h-dvh bg-transparent overflow-x-hidden relative">
-        <main className="w-full mx-auto px-0 pt-0 pb-28">
+        <main className="w-full mx-auto px-4 pt-4 pb-28">
           <BackendWakeBanner />
           <div className="w-full">{children}</div>
         </main>

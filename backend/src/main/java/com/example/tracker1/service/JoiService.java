@@ -85,11 +85,10 @@ public class JoiService {
         String recentAppsContext = recentApps.stream()
                 .map(app -> {
                     String skills = app.getExtractedSkills() != null ? String.join(", ", app.getExtractedSkills()) : "None";
-                    String desc = app.getJobDescription() != null ? app.getJobDescription() : "None";
-                    return String.format("Job Application:\n- Role: %s\n- Company: %s\n- Status: %s\n- Date: %s\n- Location: %s\n- Salary: %s %s-%s\n- Skills: %s\n- Description: %s", 
+                    return String.format("Job Application:\n- Role: %s\n- Company: %s\n- Status: %s\n- Date: %s\n- Location: %s\n- Salary: %s %s-%s\n- Skills: %s", 
                             app.getRole(), app.getCompany(), app.getStatus(), app.getAppliedDate(),
                             app.getLocation(), app.getCurrency(), app.getSalaryMin(), app.getSalaryMax(),
-                            skills, desc);
+                            skills);
                 })
                 .collect(java.util.stream.Collectors.joining("\n\n"));
 

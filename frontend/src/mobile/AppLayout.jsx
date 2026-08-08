@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import { Home, BriefcaseBusiness, CheckSquare, Timer, CheckCircle2 } from "lucide-react"
+import { Home, BriefcaseBusiness, CheckSquare, Timer, CheckCircle2, Bookmark, BarChart3, Sparkles, Settings } from "lucide-react"
 import { useLocation } from "react-router-dom"
 import TopBar from "./TopBar"
 import BottomNav from "./BottomNav"

@@ -296,12 +296,12 @@ function ApplicationDetail() {
           Offline read-only mode. Editing and deleting require internet + sign-in.
         </div>
       )}
-       {/* Desktop header (mobile uses TopBar actions) */}
-      <div className="hidden sm:flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 w-full overflow-hidden">
+       {/* Page Header */}
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 w-full overflow-hidden">
         <div className="flex items-start gap-3 sm:gap-4 min-w-0">
           <button
             onClick={() => navigate("/job-tracker")}
-            className="p-2 text-dark-400 hover:text-white hover:bg-dark-700 rounded-xl transition-all mt-1"
+            className="hidden sm:block p-2 text-dark-400 hover:text-white hover:bg-dark-700 rounded-xl transition-all mt-1"
           >
             <ArrowLeftIcon />
           </button>

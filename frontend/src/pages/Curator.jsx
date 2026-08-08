@@ -6,7 +6,7 @@ import {
   listCuratorItems,
   toggleCuratorFavorite,
   updateCuratorItem,
-} from "../db"
+} from "../api/curator"
 
 const TYPES = [
   { id: "ALL", label: "All" },

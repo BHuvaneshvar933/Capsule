@@ -106,14 +106,14 @@ import { useEffect, useState } from "react"
 function Layout({ children }) {
   const navigate = useNavigate()
   const location = useLocation()
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [bottomSheetOpen, setBottomSheetOpen] = useState(false)
   const online = useOnlineStatus()
   const token = getToken()
 
-  // Prevent background scroll when the mobile sidebar is open.
+  // Prevent background scroll when the mobile bottom sheet is open.
   useEffect(() => {
     if (typeof document === "undefined") return
-    if (!sidebarOpen) return
+    if (!bottomSheetOpen) return
 
     const prevBodyOverflow = document.body.style.overflow
     const prevHtmlOverflow = document.documentElement.style.overflow
@@ -124,25 +124,12 @@ function Layout({ children }) {
       document.body.style.overflow = prevBodyOverflow
       document.documentElement.style.overflow = prevHtmlOverflow
     }
-  }, [sidebarOpen])
+  }, [bottomSheetOpen])
 
-  // If a nav overlay is open, close it on route change.
+  // Close sheet on route change.
   useEffect(() => {
-    // Intentionally closing UI state on navigation.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSidebarOpen(false)
+    setBottomSheetOpen(false)
   }, [location.pathname])
-
-  // Escape closes the mobile sidebar.
-  useEffect(() => {
-    if (typeof window === "undefined") return
-    if (!sidebarOpen) return
-    const onKeyDown = (e) => {
-      if (e.key === "Escape") setSidebarOpen(false)
-    }
-    window.addEventListener("keydown", onKeyDown)
-    return () => window.removeEventListener("keydown", onKeyDown)
-  }, [sidebarOpen])
 
   const handleLogout = () => {
     logout()
@@ -178,24 +165,13 @@ function Layout({ children }) {
   ]
 
   return (
-    <div className="min-h-dvh bg-transparent flex lg:h-dvh">
-      {/* Mobile sidebar backdrop */}
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-dark-950/80 backdrop-blur-sm z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-          onTouchMove={(e) => e.preventDefault()}
-        />
-      )}
-
-      {/* Sidebar */}
-      <aside className={`
-         fixed lg:static inset-y-0 left-0 z-50
-          w-72 bg-dark-800/45 backdrop-blur-xl border-r border-dark-700/60
+    <div className="min-h-dvh bg-transparent flex lg:h-dvh relative pb-[env(safe-area-inset-bottom)]">
+      {/* Sidebar (Desktop only) */}
+      <aside className="
+         hidden lg:flex flex-col static inset-y-0 left-0 z-50
+         w-72 bg-dark-800/45 backdrop-blur-xl border-r border-dark-700/60
          h-dvh
-         transform transition-transform duration-300 ease-out
-         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-       `}>
+       ">
         <div className="flex flex-col h-full min-h-0">
           {/* Logo area */}
           <div className="p-6 border-b border-dark-700/50">
@@ -222,7 +198,6 @@ function Layout({ children }) {
                     <NavLink
                       key={item.to}
                       to={item.to}
-                      onClick={() => setSidebarOpen(false)}
                       className={({ isActive }) => (isActive ? "nav-item-active" : "nav-item")}
                     >
                       {item.icon}
@@ -249,29 +224,10 @@ function Layout({ children }) {
 
       {/* Main content area */}
       <div className="flex-1 flex flex-col min-h-dvh min-w-0 lg:min-h-0 lg:h-dvh">
-        {/* Mobile header */}
-        <header className="lg:hidden sticky top-0 z-30 bg-dark-800/55 backdrop-blur-xl border-b border-dark-700/60">
-          <div className="flex items-center justify-between p-4">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="p-2 text-dark-300 hover:text-white hover:bg-dark-700 rounded-xl transition-colors"
-            >
-              <MenuIcon />
-            </button>
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg">
-                <LogoMark className="w-6 h-6" />
-              </div>
-              <span className="font-bold text-white">Capsule</span>
-            </div>
-            <div className="w-10" /> {/* Spacer for centering */}
-          </div>
-        </header>
-
         {/* Page content */}
-        <main className="flex-1 p-4 lg:p-8 overflow-x-hidden lg:min-h-0 lg:overflow-y-auto">
+        <main className="flex-1 p-0 pb-28 pt-safe lg:p-8 overflow-x-hidden lg:min-h-0 lg:overflow-y-auto">
           {!online && (
-            <div className="mb-4 px-4 py-3 rounded-2xl border border-warning-500/30 bg-warning-500/10 text-warning-300">
+            <div className="mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 px-4 py-3 rounded-2xl border border-warning-500/30 bg-warning-500/10 text-warning-300">
               Offline mode: showing cached applications and interviews.
               {!token && " (Read-only until you sign in again.)"}
             </div>
@@ -285,6 +241,79 @@ function Layout({ children }) {
          </main>
       </div>
       <JoiChat />
+
+      {/* Mobile Bottom Navigation Bar */}
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-white/5 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
+        <div className="flex items-center justify-around h-16 px-2">
+          <NavLink to="/dashboard" className={({isActive}) => `flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${isActive ? 'text-primary-400' : 'text-textMuted hover:text-white'}`}>
+            <DashboardIcon />
+            <span className="text-[10px] font-bold tracking-wide">Home</span>
+          </NavLink>
+          <NavLink to="/job-tracker" className={({isActive}) => `flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${isActive ? 'text-primary-400' : 'text-textMuted hover:text-white'}`}>
+            <BriefcaseIcon />
+            <span className="text-[10px] font-bold tracking-wide">Career</span>
+          </NavLink>
+          <NavLink to="/todos" className={({isActive}) => `flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${isActive ? 'text-primary-400' : 'text-textMuted hover:text-white'}`}>
+            <CheckListIcon />
+            <span className="text-[10px] font-bold tracking-wide">Focus</span>
+          </NavLink>
+          <button onClick={() => setBottomSheetOpen(true)} className="flex flex-col items-center justify-center w-full h-full space-y-1 text-textMuted hover:text-white transition-colors">
+            <MenuIcon />
+            <span className="text-[10px] font-bold tracking-wide">Menu</span>
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Bottom Sheet (Hub) */}
+      <div className={`lg:hidden fixed inset-0 z-50 transition-opacity duration-300 ${bottomSheetOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setBottomSheetOpen(false)} />
+        <div className={`absolute bottom-0 inset-x-0 bg-[#0c0c0c] border-t border-white/10 rounded-t-3xl shadow-[0_-20px_50px_rgba(0,0,0,0.9)] transform transition-transform duration-300 ease-out ${bottomSheetOpen ? 'translate-y-0' : 'translate-y-full'}`}>
+          <div className="flex justify-center pt-3 pb-2">
+            <div className="w-12 h-1.5 bg-white/20 rounded-full" />
+          </div>
+          
+          <div className="p-6 pt-2 pb-safe max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl shadow-lg shadow-primary-500/18">
+                  <LogoMark />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white tracking-tight">Capsule</h2>
+                  <p className="text-xs text-primary-400 font-medium">Keep it together</p>
+                </div>
+              </div>
+              <button onClick={() => setBottomSheetOpen(false)} className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-white transition-colors">
+                <CloseIcon />
+              </button>
+            </div>
+
+            <div className="space-y-8">
+              {navGroups.map(group => (
+                <div key={group.title}>
+                  <h3 className="text-[11px] font-bold text-textMuted uppercase tracking-widest mb-4 ml-1">{group.title}</h3>
+                  <div className="grid grid-cols-4 gap-4">
+                    {group.items.map(item => (
+                      <NavLink key={item.to} to={item.to} onClick={() => setBottomSheetOpen(false)} className="flex flex-col items-center gap-2 group">
+                        <div className="w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-textSecondary group-hover:bg-primary-500/20 group-hover:text-primary-400 group-hover:border-primary-500/30 transition-all shadow-neu-flat">
+                          {item.icon}
+                        </div>
+                        <span className="text-[10px] font-semibold text-textSecondary text-center whitespace-nowrap overflow-hidden text-ellipsis w-full px-1">{item.label}</span>
+                      </NavLink>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              
+              <div className="pt-4 mt-8 border-t border-white/5">
+                <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 py-4 bg-danger-500/10 text-danger-400 hover:bg-danger-500/20 rounded-2xl font-bold transition-colors">
+                  <LogoutIcon /> Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

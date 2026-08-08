@@ -74,7 +74,7 @@ public class JoiService {
                     logger.info("Doc ID: {}, Meta userId: {}, Match: {}", doc.getId(), doc.getMetadata().get("userId"), match);
                     return match;
                 })
-                .limit(10)
+                .limit(4)
                 .map(org.springframework.ai.document.Document::getContent)
                 .collect(java.util.stream.Collectors.joining("\n\n"));
         
@@ -98,18 +98,7 @@ public class JoiService {
                             : "there";
         String userEmail = user != null ? user.getEmail() : null;
         
-        // Fetch the user's most recent resume
-        String resumeContext = "None";
-        if (userEmail != null) {
-            java.util.List<ResumeDocument> resumes = resumeRepository.findAllByUserEmailOrderByCreatedAtDesc(userEmail);
-            if (!resumes.isEmpty() && resumes.get(0).getExtractedText() != null) {
-                resumeContext = resumes.get(0).getExtractedText();
-            }
-        }
-
-        String finalContext = "--- USER'S LATEST RESUME (BACKGROUND & SKILLS) ---\n" + 
-                              resumeContext + 
-                              "\n\n--- RECENT ACTIVE APPLICATIONS ---\n" + 
+        String finalContext = "--- RECENT ACTIVE APPLICATIONS ---\n" + 
                               (recentAppsContext.isBlank() ? "None" : recentAppsContext) + 
                               "\n\n--- ADDITIONAL RELEVANT DATA ---\n" + 
                               (context.isBlank() ? "None" : context);

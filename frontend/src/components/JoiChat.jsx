@@ -11,8 +11,12 @@ export default function JoiChat() {
   const chatContainerRef = useRef(null);
 
   useEffect(() => {
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener('open-joi', handleOpen);
+    
     const handleClickOutside = (event) => {
-      if (chatContainerRef.current && !chatContainerRef.current.contains(event.target)) {
+      // Don't close if they clicked the toggle button
+      if (chatContainerRef.current && !chatContainerRef.current.contains(event.target) && event.target.closest('button')?.getAttribute('aria-label') !== 'Open Joi AI') {
         setIsOpen(false);
       }
     };
@@ -20,6 +24,7 @@ export default function JoiChat() {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => {
+      window.removeEventListener('open-joi', handleOpen);
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen]);
@@ -54,19 +59,23 @@ export default function JoiChat() {
 
   return (
     <>
-      {/* Floating Action Button (FAB) for triggering the Joi chat overlay */}
+      {/* Floating Action Button (FAB) for Desktop only */}
       <button
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-24 md:bottom-6 right-4 md:right-6 p-4 rounded-full bg-gradient-to-r from-primary-500 to-accent-600 text-white shadow-xl shadow-primary-500/20 hover:scale-105 transition-transform z-50 ${isOpen ? 'hidden' : 'flex'} items-center justify-center`}
+        aria-label="Open Joi AI"
+        className={`fixed bottom-6 right-6 p-4 rounded-full bg-gradient-to-r from-primary-500 to-accent-600 text-white shadow-xl shadow-primary-500/20 hover:scale-105 transition-transform z-50 ${isOpen ? 'hidden' : 'hidden md:flex'} items-center justify-center`}
       >
         <Sparkles className="w-6 h-6" />
       </button>
 
       {/* Main Chat Interface Overlay */}
       {isOpen && (
-        <div ref={chatContainerRef} className="fixed bottom-24 md:bottom-6 right-4 md:right-6 w-[calc(100vw-32px)] sm:w-96 h-[500px] max-h-[70vh] bg-dark-800/95 backdrop-blur-xl border border-dark-700/60 rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden">
+        <div 
+          ref={chatContainerRef} 
+          className="fixed inset-0 md:inset-auto md:bottom-6 md:right-6 w-full md:w-96 h-dvh md:h-[500px] md:max-h-[70vh] bg-[#050505] md:bg-dark-800/95 md:backdrop-blur-xl md:border md:border-dark-700/60 md:rounded-2xl shadow-2xl flex flex-col z-[100] md:z-50 overflow-hidden animate-fade-in-up md:animate-scale-in"
+        >
           {/* Component Header */}
-          <div className="p-4 border-b border-dark-700/50 bg-dark-900/50 flex items-center justify-between">
+          <div className="p-4 pt-[calc(env(safe-area-inset-top)+1rem)] md:pt-4 border-b border-dark-700/50 bg-[#0a0a0a] md:bg-dark-900/50 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="p-1.5 bg-primary-500/20 rounded-lg text-primary-400">
                 <Sparkles className="w-5 h-5" />
@@ -79,10 +88,15 @@ export default function JoiChat() {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
             {messages.map((msg, i) => (
-              <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm whitespace-pre-wrap ${msg.role === 'user' ? 'bg-primary-600 text-white rounded-br-none' : 'bg-dark-700 text-dark-100 rounded-bl-none'}`}>
+              <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                {msg.role === 'assistant' && (
+                  <div className="w-8 h-8 rounded-full bg-primary-500/20 text-primary-400 flex items-center justify-center shrink-0 mt-1">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                )}
+                <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed whitespace-pre-wrap shadow-sm ${msg.role === 'user' ? 'bg-primary-600 text-white rounded-tr-sm' : 'bg-dark-800 border border-white/5 text-dark-100 rounded-tl-sm'}`}>
                   {msg.content.replace(/\\n/g, '\n')}
                 </div>
               </div>
@@ -98,21 +112,21 @@ export default function JoiChat() {
           </div>
 
           {/* Input Area */}
-          <div className="p-4 border-t border-dark-700/50 bg-dark-900/50">
+          <div className="p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] md:pb-4 border-t border-dark-700/50 bg-[#0a0a0a] md:bg-dark-900/50">
             <form onSubmit={handleSend} className="flex gap-2">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask Joi..."
-                className="flex-1 bg-dark-800 border border-dark-600 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors"
+                placeholder="Message Joi..."
+                className="flex-1 bg-dark-800 border border-dark-600 rounded-xl px-4 py-3 min-h-[48px] text-[15px] text-white focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all shadow-neu-pressed"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || isLoading}
-                className="p-2 bg-primary-600 text-white rounded-xl hover:bg-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="p-3 bg-primary-600 text-white rounded-xl min-h-[48px] min-w-[48px] flex items-center justify-center hover:bg-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-glow"
               >
-                <Send className="w-4 h-4" />
+                <Send className="w-5 h-5" />
               </button>
             </form>
           </div>

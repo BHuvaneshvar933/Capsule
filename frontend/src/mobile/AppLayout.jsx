@@ -106,6 +106,16 @@ export default function AppLayout({ children }) {
                 <BriefcaseBusiness className="w-5 h-5" />
                 <span className="text-[10px] font-bold tracking-wide">Career</span>
               </NavLink>
+              
+              {/* Central Joi AI Button */}
+              <button 
+                onClick={() => window.dispatchEvent(new CustomEvent('open-joi'))}
+                className="relative -top-4 flex flex-col items-center justify-center w-14 h-14 bg-gradient-to-tr from-primary-500 to-accent-600 rounded-full text-white shadow-xl shadow-primary-500/20 hover:scale-105 transition-transform"
+                aria-label="Open Joi AI"
+              >
+                <Sparkles className="w-6 h-6" />
+              </button>
+
               <NavLink to="/todos" className={({isActive}) => `flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${isActive ? 'text-primary-400' : 'text-textMuted hover:text-white'}`}>
                 <CheckSquare className="w-5 h-5" />
                 <span className="text-[10px] font-bold tracking-wide">Focus</span>

@@ -79,7 +79,7 @@ body {
 
   /* Primary button */
   .btn-primary {
-    @apply bg-gradient-to-r from-primary-400 to-primary-600 text-black px-6 py-3 rounded-xl font-bold tracking-wide
+    @apply bg-gradient-to-r from-primary-400 to-primary-600 text-black px-6 py-3 min-h-[48px] rounded-xl font-bold tracking-wide
            hover:from-primary-300 hover:to-primary-500 transition-all duration-300
            focus:outline-none focus:ring-2 focus:ring-primary-500/55 focus:ring-offset-2 focus:ring-offset-background
            shadow-glow hover:shadow-glow-lg
@@ -88,7 +88,7 @@ body {
 
   /* Secondary button */
   .btn-secondary {
-    @apply bg-surfaceAlt/60 text-textPrimary px-6 py-3 rounded-xl font-semibold tracking-wide
+    @apply bg-surfaceAlt/60 text-textPrimary px-6 py-3 min-h-[48px] rounded-xl font-semibold tracking-wide
            hover:bg-surfaceAlt/80 transition-all duration-300
            focus:outline-none focus:ring-2 focus:ring-primary-500/25 focus:ring-offset-2 focus:ring-offset-background
            border border-white/5 shadow-neu-flat
@@ -97,14 +97,14 @@ body {
 
   /* Ghost button */
   .btn-ghost {
-    @apply text-textSecondary px-4 py-2 rounded-xl font-medium tracking-wide
+    @apply text-textSecondary px-4 py-2 min-h-[44px] rounded-xl font-medium tracking-wide
            hover:text-textPrimary hover:bg-surfaceAlt/40 transition-all duration-300
            focus:outline-none focus:ring-2 focus:ring-primary-500/20;
   }
 
   /* Danger button */
   .btn-danger {
-    @apply bg-danger-600 text-white px-6 py-3 rounded-xl font-bold tracking-wide
+    @apply bg-danger-600 text-white px-6 py-3 min-h-[48px] rounded-xl font-bold tracking-wide
            hover:bg-danger-700 transition-all duration-300
            focus:outline-none focus:ring-2 focus:ring-danger-500/50 focus:ring-offset-2 focus:ring-offset-background
            shadow-neu-flat hover:shadow-neu-elevated
@@ -122,7 +122,7 @@ body {
 
   /* Input field - Neumorphic Inset */
   .input-field {
-    @apply w-full bg-[#0a0a0a] border-0 rounded-xl px-5 py-4 text-textPrimary font-medium
+    @apply w-full bg-[#0a0a0a] border-0 rounded-xl px-5 py-4 min-h-[48px] text-textPrimary font-medium
            placeholder:text-textMuted shadow-neu-pressed
            focus:outline-none focus:ring-1 focus:ring-primary-500/50
            transition-all duration-300;
@@ -130,7 +130,7 @@ body {
 
   /* Select field - Neumorphic Inset */
   .select-field {
-    @apply w-full bg-[#0a0a0a] border-0 rounded-xl px-5 py-4 text-textPrimary font-medium shadow-neu-pressed
+    @apply w-full bg-[#0a0a0a] border-0 rounded-xl px-5 py-4 min-h-[48px] text-textPrimary font-medium shadow-neu-pressed
            focus:outline-none focus:ring-1 focus:ring-primary-500/50
            transition-all duration-300 cursor-pointer appearance-none bg-no-repeat pr-10;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");

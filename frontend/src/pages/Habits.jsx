@@ -372,7 +372,7 @@ export default function Habits() {
             <div className="text-xs text-dark-500 tabular-nums">{selectedSummary.done}/{selectedSummary.total} done</div>
           </div>
 
-          <div className="mt-3 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          <div className="mt-3 flex gap-2 overflow-x-auto pt-2 pb-2 scrollbar-hide">
             {daySummaries.map((d) => {
               const selected = d.dayKey === selectedDay
               const isToday = d.dayKey === todayKey
@@ -440,7 +440,7 @@ export default function Habits() {
           </div>
         </div>
 
-        <div className="mt-5 grid gap-3">
+        <div className="mt-5 grid gap-4">
           <div className="rounded-2xl border border-dark-700 bg-dark-900/20 p-4">
             <div className="text-sm font-semibold text-white">Add a habit</div>
             <div className="mt-3 flex flex-col sm:flex-row gap-3 w-full min-w-0">

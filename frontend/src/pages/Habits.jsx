@@ -440,7 +440,7 @@ export default function Habits() {
           </div>
         </div>
 
-        <div className="mt-5 grid gap-4">
+        <div className="mt-5 grid gap-4 w-full min-w-0">
           <div className="rounded-2xl border border-dark-700 bg-dark-900/20 p-4">
             <div className="text-sm font-semibold text-white">Add a habit</div>
             <div className="mt-3 flex flex-col sm:flex-row gap-3 w-full min-w-0">
@@ -539,7 +539,7 @@ export default function Habits() {
                             </div>
                           ) : (
                             <div className="min-w-0">
-                              <div className={"text-white font-semibold truncate " + (done ? "line-through opacity-80" : "")}>
+                              <div className={"text-white font-semibold break-words whitespace-normal " + (done ? "line-through opacity-80" : "")}>
                                 {h.name}
                               </div>
                               {streak > 0 ? (

@@ -110,7 +110,7 @@ export default function AppLayout({ children }) {
               {/* Central Joi AI Button */}
               <button 
                 onClick={() => window.dispatchEvent(new CustomEvent('open-joi'))}
-                className="relative -top-4 flex flex-col items-center justify-center w-14 h-14 bg-gradient-to-tr from-primary-500 to-accent-600 rounded-full text-white shadow-xl shadow-primary-500/20 hover:scale-105 transition-transform"
+                className="relative -top-4 shrink-0 flex flex-col items-center justify-center w-14 h-14 bg-gradient-to-tr from-primary-500 to-accent-600 rounded-full text-white shadow-xl shadow-primary-500/20 hover:scale-105 transition-transform"
                 aria-label="Open Joi AI"
               >
                 <Sparkles className="w-6 h-6" />

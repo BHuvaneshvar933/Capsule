@@ -422,7 +422,7 @@ export default function Pomodoro() {
   }, [mode.seconds, timeLeft])
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-0 sm:space-y-8">
       <div className="hidden sm:flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-white">Pomodoro</h1>
@@ -437,7 +437,7 @@ export default function Pomodoro() {
         <div className="space-y-6">
           {/* Timer section keeps its card on all sizes */}
           <div className="pomodoro-section flex flex-col items-center text-center">
-            <div className="py-8 sm:py-0 w-full flex flex-col items-center justify-center gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="py-2 sm:py-0 w-full flex flex-col items-center justify-center gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <div className="text-dark-400 text-sm">Mode</div>
                 <div className="text-white font-semibold text-lg">{mode.label}</div>

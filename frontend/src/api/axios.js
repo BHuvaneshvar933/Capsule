@@ -10,9 +10,9 @@ function resolveApiBaseUrl() {
   if (typeof window !== "undefined") {
     // Chrome extension pages are `chrome-extension://...` origins; they can't
     // host the API, so default to local backend unless explicitly configured.
-    if (window.location.protocol === "chrome-extension:") return "https://capsuleh1.tech"
+    if (window.location.protocol === "chrome-extension:") return "https://capsulehq.tech"
     const host = window.location.hostname
-    if (host === "localhost" || host === "127.0.0.1") return "https://capsuleh1.tech"
+    if (host === "localhost" || host === "127.0.0.1") return "https://capsulehq.tech"
     return window.location.origin
   }
 

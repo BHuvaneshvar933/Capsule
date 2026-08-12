@@ -106,7 +106,10 @@ public class OpenAiService {
                 "- No markdown, no code fences.\n\n" +
                 "RESUME:\n" + resumeText;
 
+        long llmStart = System.currentTimeMillis();
         JsonNode json = callChatJson(system, user);
+        long llmEnd = System.currentTimeMillis();
+        System.out.println("Capsule AI Generation Latency: " + (llmEnd - llmStart) + " ms");
         return objectMapper.convertValue(json, GenerateQuestionsResponse.class);
     }
 

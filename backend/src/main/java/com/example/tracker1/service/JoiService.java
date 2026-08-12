@@ -64,7 +64,10 @@ public class JoiService {
                 .withTopK(4)
                 .withSimilarityThreshold(0.0);
         
+        long ragStart = System.nanoTime();
         java.util.List<org.springframework.ai.document.Document> docs = vectorStore.similaritySearch(searchRequest);
+        long ragEnd = System.nanoTime();
+        System.out.println("Capsule RAG Vector retrieval: " + ((ragEnd - ragStart) / 1_000_000.0) + " ms");
         logger.info("JoiService found {} docs in ChromaDB for user '{}'", docs.size(), userId);
         
         String context = docs.stream()

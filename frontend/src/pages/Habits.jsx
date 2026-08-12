@@ -3,13 +3,11 @@ import {
   createHabit,
   deleteHabit,
   resetHabitsToDefaults,
-  ensureDefaultHabits,
   listHabitLogsForDays,
   listHabits,
   setHabitDoneForDay,
-  toggleHabitDoneForDay,
   updateHabit,
-} from "../db"
+} from "../api/habits"
 import HabitIconPicker from "../components/HabitIconPicker"
 import Toast from "../components/Toast"
 import ConfirmDialog from "../components/ConfirmDialog"
@@ -169,7 +167,6 @@ export default function Habits() {
       setLoading(true)
       setError("")
 
-      await ensureDefaultHabits()
       const [h, logs] = await Promise.all([listHabits(), listHabitLogsForDays(dayKeys)])
       setHabits(h)
       setLogsByDay(logs)
@@ -229,7 +226,8 @@ export default function Habits() {
 
   const onToggle = async (habitId) => {
     try {
-      const nextLog = await toggleHabitDoneForDay(selectedDay, habitId)
+      const isDone = !!selectedLog[habitId]
+      const nextLog = await setHabitDoneForDay(selectedDay, habitId, !isDone)
       setLogsByDay((m) => ({ ...m, [selectedDay]: nextLog }))
     } catch (e) {
       setToast({ open: true, message: e?.message || "Couldn't update habit", tone: "error" })
@@ -324,7 +322,7 @@ export default function Habits() {
       <ConfirmDialog
         open={confirmDelete.open}
         title="Delete habit?"
-        message="This removes the habit and all its historical logs on this device."
+        message="This removes the habit and all its historical logs on all devices."
         confirmText="Delete"
         cancelText="Cancel"
         tone="danger"
@@ -335,7 +333,7 @@ export default function Habits() {
       <ConfirmDialog
         open={confirmReset}
         title="Reset checklist?"
-        message="This will replace your current habits with the starter checklist and clear all habit history on this device."
+        message="This will replace your current habits with the starter checklist and clear all habit history on all devices."
         confirmText="Reset"
         cancelText="Cancel"
         tone="danger"

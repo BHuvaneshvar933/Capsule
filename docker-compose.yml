@@ -40,9 +40,18 @@ services:
     volumes:
       - /etc/ssl/cloudflare:/etc/nginx/ssl:ro
     restart: always
+    
+  mongo:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    restart: always
 
 volumes:
   vector_data:
   chroma_data:
   model_cache:
   onnx_cache:
+  mongo_data:

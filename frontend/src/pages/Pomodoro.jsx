@@ -2,13 +2,10 @@ import { useEffect, useMemo, useRef, useState } from "react"
 
 import { formatTimer } from "../helpers"
 import {
-  addPomodoro,
-  clearPomodoros,
   getPomodoroSettings,
-  listPomodorosSince,
-  prunePomodorosOlderThan,
   setPomodoroSettings,
 } from "../db"
+import { addPomodoro, listPomodoros, clearPomodoros } from "../api/pomodoros"
 import Button from "../mobile/ui/Button"
 import { useTopBarActions } from "../mobile/chrome"
 
@@ -178,11 +175,14 @@ export default function Pomodoro() {
   }, [taskCategory, taskTitle, tagsRaw])
 
   const refreshRecent = async () => {
-    await prunePomodorosOlderThan(60)
-    const sixtyDaysAgo = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString()
-    const items = await listPomodorosSince(sixtyDaysAgo)
-    items.sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
-    setRecentPomodoros(items)
+    try {
+      const sixtyDaysAgo = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString()
+      const items = await listPomodoros(sixtyDaysAgo)
+      items.sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
+      setRecentPomodoros(items)
+    } catch (e) {
+      console.error("Failed to load pomodoros", e)
+    }
   }
 
   useEffect(() => {
@@ -239,14 +239,18 @@ export default function Pomodoro() {
     const title = category !== "Others" ? category : (String(custom).trim() || "General Focus")
     const tags = parseTags(labels?.tagsRaw)
 
-    await addPomodoro({
-      duration: elapsedMinutes,
-      type: "work",
-      taskTitle: title,
-      tags,
-      completedAt: new Date().toISOString(),
-    })
-    await refreshRecent()
+    try {
+      await addPomodoro({
+        duration: elapsedMinutes,
+        type: "work",
+        taskTitle: title,
+        tags,
+        completedAt: new Date().toISOString(),
+      })
+      await refreshRecent()
+    } catch (e) {
+      console.error("Failed to add pomodoro", e)
+    }
   }
 
   const completeSession = async (isStop, finalTimeLeft) => {
@@ -340,14 +344,18 @@ export default function Pomodoro() {
   }
 
   const clearHistory = async () => {
-    await clearPomodoros()
-    setDangerOpen(false)
-    setSelectedDate(yyyyMmDd(new Date()))
-    setMonthCursor(() => {
-      const d = new Date()
-      return new Date(d.getFullYear(), d.getMonth(), 1)
-    })
-    await refreshRecent()
+    try {
+      await clearPomodoros()
+      setDangerOpen(false)
+      setSelectedDate(yyyyMmDd(new Date()))
+      setMonthCursor(() => {
+        const d = new Date()
+        return new Date(d.getFullYear(), d.getMonth(), 1)
+      })
+      await refreshRecent()
+    } catch (e) {
+      console.error("Failed to clear pomodoros", e)
+    }
   }
 
   const updateSetting = (key, value) => {
@@ -771,7 +779,7 @@ export default function Pomodoro() {
           <div className="modal-overlay" onClick={() => setDangerOpen(false)}>
             <div className="modal-content max-w-md" onClick={(e) => e.stopPropagation()}>
               <h3 className="text-xl font-bold text-white">Clear Pomodoro history?</h3>
-              <p className="mt-2 text-dark-300">This permanently deletes your local focus logs on this device.</p>
+              <p className="mt-2 text-dark-300">This permanently deletes your focus logs on all devices.</p>
 
               <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-end gap-3">
                 <button type="button" className="btn-secondary" onClick={() => setDangerOpen(false)}>

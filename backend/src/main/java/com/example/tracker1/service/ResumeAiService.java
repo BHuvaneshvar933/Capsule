@@ -39,11 +39,14 @@ public class ResumeAiService {
                 "RESUME:\n" + resume + "\n\n" +
                 "JOB DESCRIPTION:\n" + jd;
 
+        long aiStart = System.currentTimeMillis();
         ResumeJobMatchResponse response = chatClient.prompt()
                 .system(systemPrompt)
                 .user(userPrompt)
                 .call()
                 .entity(new ParameterizedTypeReference<ResumeJobMatchResponse>() {});
+        long aiEnd = System.currentTimeMillis();
+        System.out.println("Capsule AI Generation Latency (Analyze Resume): " + (aiEnd - aiStart) + " ms");
 
         if (response != null) {
             int score = response.getMatchScore();

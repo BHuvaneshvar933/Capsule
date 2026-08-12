@@ -43,6 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/test").permitAll()
                         // Public metrics endpoint (for demo/reporting)
                         .requestMatchers("/api/metrics").permitAll()
+                        .requestMatchers("/api/applications").permitAll()
                         .requestMatchers("/api/notifications/vapid-key").permitAll()
                          .anyRequest().authenticated()
                  )

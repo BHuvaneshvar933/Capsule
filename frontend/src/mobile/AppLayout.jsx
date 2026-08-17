@@ -89,7 +89,7 @@ export default function AppLayout({ children }) {
   return (
     <MobileChromeContext.Provider value={chromeValue}>
       <div className="min-h-dvh bg-transparent overflow-x-hidden relative flex flex-col">
-        <TopBar onOpenMenu={() => setMoreOpen(true)} />
+        <TopBar onOpenMenu={() => setMoreOpen(true)} actions={topBarActions} />
         <main className="w-full mx-auto px-4 pb-28 flex-1">
           <BackendWakeBanner />
           <div className="w-full">{children}</div>

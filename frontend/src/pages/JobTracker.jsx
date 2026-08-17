@@ -447,7 +447,7 @@ function JobTracker() {
           )}
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
+        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6 w-full min-w-0">
           {applications.map((app, index) => (
             <ApplicationCard
               key={app.id}
@@ -517,7 +517,7 @@ function ApplicationCard({ app, index, onDelete, onClick, online }) {
   return (
     <div
       onClick={onClick}
-      className="card cursor-pointer group animate-fade-in-up hover:border-primary-500/25"
+      className="card cursor-pointer group animate-fade-in-up hover:border-primary-500/25 min-w-0 w-full overflow-hidden"
       style={{ animationDelay: `${index * 50}ms` }}
     >
       <div className="flex items-start justify-between mb-4">
@@ -548,7 +548,7 @@ function ApplicationCard({ app, index, onDelete, onClick, online }) {
           {app.extractedSkills.slice(0, 4).map((skill, i) => (
             <span
               key={i}
-              className="text-xs px-2 py-1 bg-dark-700 text-dark-300 rounded-lg"
+              className="text-xs px-2 py-1 bg-dark-700 text-dark-300 rounded-lg break-all"
             >
               {skill}
             </span>
